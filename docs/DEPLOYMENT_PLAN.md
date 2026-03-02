@@ -32,8 +32,8 @@
 ### 1.2 Supabase
 
 - [ ] Создать проект на [supabase.com](https://supabase.com) (или использовать существующий)
-- [ ] Применить миграцию: `supabase/migrations/001_players.sql`  
-  - Supabase Dashboard → SQL Editor → вставить содержимое файла → Run
+- [ ] Применить миграции: `npx supabase link --project-ref <REF>` затем `npm run db:migrate`  
+  - Или: Supabase Dashboard → SQL Editor → вставить содержимое файлов из `supabase/migrations/` → Run
 - [ ] Включить доступ к таблице `players`:
   - Вариант A: временно отключить RLS для быстрого старта (Settings → API → RLS: disable)
   - Вариант B: добавить политики (см. ниже)

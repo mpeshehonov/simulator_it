@@ -24,9 +24,12 @@ cp .env.local.example .env.local
 ## 2. Supabase
 
 1. Создать проект на [supabase.com](https://supabase.com)
-2. Применить миграцию: `supabase/migrations/001_players.sql`
-   - Через Supabase Dashboard → SQL Editor
-   - Или через CLI: `supabase db push`
+2. Применить миграции из консоли (CLI уже в проекте как devDependency, скрипты вызывают его через `npx`):
+   - Один раз привязать проект: `npx supabase link --project-ref <YOUR_PROJECT_REF>` (ref из URL дашборда)
+   - Применить: `npm run db:migrate` (учитываются только ещё не применённые миграции)
+   - Статус: `npm run db:migrate:list`; новая миграция: `npm run db:migrate:new -- <имя>`
+   - Альтернатива: Supabase Dashboard → SQL Editor → вставить содержимое `supabase/migrations/*.sql`
+   - Глобально CLI через npm ставить нельзя; при необходимости: `brew install supabase/tap/supabase` (macOS)
 3. (Опционально) Добавить RLS-политики для доступа по `telegram_id` (сейчас в миграции только `enable row level security`)
 
 ---
@@ -59,6 +62,8 @@ npx shadcn@latest add "https://pixelactui.com/r/{name}.json"
 - `npm run dev` — запуск dev-сервера
 - `npm run build` — сборка
 - `npm run lint` — линтер
+- `npm run db:migrate` — применить миграции к привязанному проекту Supabase
+- `npm run db:migrate:list` — список миграций (локально и на удалённой БД)
 
 ---
 

@@ -1,0 +1,15 @@
+# Supabase CLI config. Migrations: supabase/migrations/
+# CLI установлен локально (devDependency). Глобально через npm ставить нельзя — только brew install supabase/tap/supabase.
+# Перед первым запуском: npx supabase link --project-ref <YOUR_PROJECT_REF>
+# Затем: npm run db:migrate (применить), npm run db:migrate:list (статус).
+
+project_id = "devlife-8bit"
+
+[api]
+port = 54321
+
+[db]
+port = 54322
+
+[studio]
+port = 54323
