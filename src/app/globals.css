@@ -125,8 +125,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -151,4 +149,9 @@
   100% {
     transform: translateX(160%);
   }
+}
+
+.app-safe-top {
+  padding-top: calc(env(safe-area-inset-top) + 16px);
+  padding-bottom: env(safe-area-inset-bottom);
 }

@@ -8,7 +8,7 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ message }: LoadingScreenProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="app-safe-top flex min-h-screen items-center justify-center px-4">
       <Card>
         <CardContent className="flex flex-col items-center gap-4 px-6 py-4">
           <p className="pixel-font text-xs text-muted-foreground">{message ?? "Загрузка..."}</p>

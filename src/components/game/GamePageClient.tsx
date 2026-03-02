@@ -71,7 +71,7 @@ export function GamePageClient() {
 
   const canAct = player && player.energy >= 1;
 
-  if (initData && (isLoading || needsOnboarding)) {
+  if (initData && isLoading && !needsOnboarding) {
     return <LoadingScreen />;
   }
 
@@ -97,7 +97,7 @@ export function GamePageClient() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 pb-8">
+    <div className="app-safe-top min-h-screen bg-background p-4 pb-8">
       <div className="mx-auto max-w-md space-y-8">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
