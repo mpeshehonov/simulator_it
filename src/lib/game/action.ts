@@ -52,7 +52,15 @@ export function executeLearn(player: Player): ActionResult {
     exp: player.exp + expGained,
   };
 
-  return { player: updated, expGained };
+  const event: GameEvent = {
+    id: "learn",
+    title: "Учёба",
+    description: `Получено ${expGained} EXP`,
+    tone: "positive",
+    effects: [],
+  };
+
+  return { player: updated, event, expGained };
 }
 
 export function executeTask(player: Player): ActionResult {

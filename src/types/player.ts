@@ -1,3 +1,8 @@
+export interface LastEvent {
+  title: string;
+  description: string;
+}
+
 export interface Player {
   id: string;
   telegramId: number;
@@ -10,6 +15,8 @@ export interface Player {
   energyUpdatedAt: string;
   skills: Record<string, number>;
   lastInterviewAt: string | null;
+  /** Последнее событие (с сервера), показывается при входе */
+  lastEvent?: LastEvent | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -52,6 +52,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: msg }, { status: 400 });
     }
 
+    const lastEventJson =
+      result.event != null
+        ? { title: result.event.title, description: result.event.description }
+        : null;
+
     const { error: updateError } = await supabase
       .from("players")
       .update({
@@ -59,6 +64,7 @@ export async function POST(request: Request) {
         exp: result.player.exp,
         money: result.player.money,
         reputation: result.player.reputation,
+        ...(lastEventJson !== null && { last_event: lastEventJson }),
         updated_at: new Date().toISOString(),
       })
       .eq("telegram_id", telegramId);

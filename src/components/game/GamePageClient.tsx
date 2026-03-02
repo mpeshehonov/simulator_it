@@ -12,7 +12,7 @@ import {
   CardFooter,
   Badge,
 } from "@/components/ui/pixelact-ui";
-import { CAREER_LEVELS, MAX_ENERGY } from "@/lib/game/constants";
+import { CAREER_LEVELS, MAX_ENERGY, EXP_FOR_INTERVIEW } from "@/lib/game/constants";
 import { PROFESSION_NAMES } from "@/lib/game/professions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
@@ -94,6 +94,11 @@ export function GamePageClient() {
   };
 
   const canAct = player && player.energy >= 1;
+
+  const expForInterview = data ? EXP_FOR_INTERVIEW[data.level] ?? 0 : 0;
+  const canGoToInterview = data != null && data.exp >= expForInterview;
+
+  const displayLastEvent = lastEvent ?? player?.lastEvent ?? null;
 
   if (initData && isLoading && !needsOnboarding && !player) {
     return <LoadingScreen />;
@@ -236,25 +241,36 @@ export function GamePageClient() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              {lastEvent ? `${lastEvent.title} — ${lastEvent.description}` : "—"}
+              {displayLastEvent
+                ? `${displayLastEvent.title} — ${displayLastEvent.description}`
+                : "—"}
             </p>
           </CardContent>
         </Card>
 
         <nav className="grid gap-2">
-          <Link href="/profession">
-            <Button variant="secondary" className="w-full">
-              👤 Выбор профессии
-            </Button>
-          </Link>
           <Link href="/skills">
             <Button variant="secondary" className="w-full">
               📊 Навыки
             </Button>
           </Link>
           <Link href="/interview">
-            <Button variant="default" className="w-full">
+            <Button
+              variant="default"
+              className="w-full"
+              disabled={!canGoToInterview}
+              title={
+                !canGoToInterview && data
+                  ? `Нужно ${expForInterview} EXP для собеседования (сейчас ${data.exp})`
+                  : undefined
+              }
+            >
               🎯 Собеседование
+            </Button>
+          </Link>
+          <Link href="/profession">
+            <Button variant="secondary" className="w-full">
+              👤 Сменить профессию
             </Button>
           </Link>
         </nav>
