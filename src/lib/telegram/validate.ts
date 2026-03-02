@@ -1,37 +1,52 @@
 import crypto from "node:crypto";
 
+export type ValidateInitDataResult =
+  | { ok: true }
+  | { ok: false; reason: "no_init_data" | "no_token" | "no_hash" | "invalid_signature" | "parse_error" };
+
 /**
  * Валидация initData от Telegram WebApp (HMAC-SHA256).
  * @see https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+ * @see https://gist.github.com/konstantin24121/49da5d8023532d66cc4db1136435a885
  */
-export function validateInitData(initData: string): boolean {
-  if (!initData || typeof initData !== "string") return false;
+export function validateInitData(initData: string): ValidateInitDataResult {
+  if (!initData || typeof initData !== "string") {
+    return { ok: false, reason: "no_init_data" };
+  }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) return false;
+  if (!token) {
+    return { ok: false, reason: "no_token" };
+  }
 
   try {
-    const params = new URLSearchParams(initData);
-    const hash = params.get("hash");
-    params.delete("hash");
+    const encoded = decodeURIComponent(initData);
+    const arr = encoded.split("&");
 
-    if (!hash) return false;
+    const hashIdx = arr.findIndex((s) => s.startsWith("hash="));
+    if (hashIdx === -1) return { ok: false, reason: "no_hash" };
 
-    const dataCheckString = [...params.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => `${k}=${v}`)
-      .join("\n");
+    const hash = arr[hashIdx]?.split("=")[1];
+    arr.splice(hashIdx, 1);
+
+    if (!hash) return { ok: false, reason: "no_hash" };
+
+    arr.sort((a, b) => a.localeCompare(b));
+    const dataCheckString = arr.join("\n");
 
     const secret = crypto.createHmac("sha256", "WebAppData").update(token).digest();
-
     const calculatedHash = crypto
       .createHmac("sha256", secret)
       .update(dataCheckString)
       .digest("hex");
 
-    return calculatedHash === hash;
+    if (calculatedHash !== hash) {
+      return { ok: false, reason: "invalid_signature" };
+    }
+
+    return { ok: true };
   } catch {
-    return false;
+    return { ok: false, reason: "parse_error" };
   }
 }
 

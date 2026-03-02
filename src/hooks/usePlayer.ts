@@ -12,6 +12,8 @@ interface UsePlayerResult {
   player: Player | null;
   isLoading: boolean;
   error: string | null;
+  needsOnboarding: boolean;
+  completeOnboarding: (profession: string) => Promise<boolean>;
   refresh: () => Promise<void>;
   doAction: (action: ActionType) => Promise<{
     ok: boolean;
@@ -30,6 +32,7 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
   const [player, setPlayer] = useState<Player | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,6 +40,7 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
     async function load() {
       setIsLoading(true);
       setError(null);
+      setNeedsOnboarding(false);
       try {
         if (!initData) {
           setPlayer(null);
@@ -48,14 +52,19 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
           body: JSON.stringify({ initData }),
         });
         if (cancelled) return;
+        const data = await res.json().catch(() => ({}));
         if (res.ok) {
-          const { player: p } = await res.json();
-          setPlayer(p);
+          if (data.needsOnboarding) {
+            setNeedsOnboarding(true);
+            setPlayer(null);
+          } else if (data.player) {
+            setPlayer(data.player);
+          }
         } else {
           setPlayer(null);
           setError("Auth failed");
         }
-      } catch (e) {
+      } catch {
         if (!cancelled) {
           setError("Network error");
           setPlayer(null);
@@ -70,6 +79,26 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
       cancelled = true;
     };
   }, [initData]);
+
+  const completeOnboarding = useCallback(
+    async (profession: string): Promise<boolean> => {
+      if (!initData) return false;
+      const res = await fetch("/api/auth/telegram", {
+        method: "POST",
+        ...defaultFetchOptions,
+        body: JSON.stringify({ initData, profession }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data.player) {
+        setPlayer(data.player);
+        setNeedsOnboarding(false);
+        return true;
+      }
+      return false;
+    },
+    [initData]
+  );
 
   const refresh = useCallback(async () => {
     if (!initData) return;
@@ -120,5 +149,13 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
     [player, initData]
   );
 
-  return { player, isLoading, error, refresh, doAction };
+  return {
+    player,
+    isLoading,
+    error,
+    needsOnboarding,
+    completeOnboarding,
+    refresh,
+    doAction,
+  };
 }

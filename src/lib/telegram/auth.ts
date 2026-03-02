@@ -18,7 +18,7 @@ export async function getTelegramIdFromRequest(request: Request): Promise<number
   }
 
   const initData = request.headers.get("x-telegram-init-data");
-  if (initData && validateInitData(initData)) {
+  if (initData && validateInitData(initData).ok) {
     const user = parseInitDataUser(initData);
     return user?.id ?? null;
   }

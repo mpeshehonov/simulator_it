@@ -12,6 +12,22 @@ export const PROFESSION_NAMES: Record<ProfessionId, string> = {
   uiux: "UI/UX-дизайнер",
 };
 
+export const PROFESSION_DESCRIPTIONS: Record<ProfessionId, string> = {
+  frontend: "React, Vue, HTML, CSS — видимая часть приложений",
+  backend: "API, базы данных, серверная логика",
+  qa: "Тестирование, автоматизация, поиск багов",
+  devops: "CI/CD, облака, деплой, мониторинг",
+  uiux: "Интерфейсы, прототипы, UX-исследования",
+};
+
+export const PROFESSION_ICONS: Record<ProfessionId, string> = {
+  frontend: "💻",
+  backend: "⚙️",
+  qa: "🔍",
+  devops: "🐳",
+  uiux: "🎨",
+};
+
 /** Ветки навыков по профессиям (3 ветки × 5 уровней) */
 export const PROFESSION_SKILL_BRANCHES: Record<ProfessionId, SkillBranch[]> = {
   frontend: [

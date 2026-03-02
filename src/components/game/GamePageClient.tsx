@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Button,
   Card,
@@ -27,8 +28,21 @@ const MOCK_PLAYER = {
 };
 
 export function GamePageClient() {
+  const router = useRouter();
   const { initData } = useTelegram();
-  const { player, isLoading, error, doAction } = usePlayer({ initData });
+  const {
+    player,
+    isLoading,
+    error,
+    needsOnboarding,
+    doAction,
+  } = usePlayer({ initData });
+
+  useEffect(() => {
+    if (!isLoading && initData && needsOnboarding) {
+      router.replace("/onboarding");
+    }
+  }, [isLoading, initData, needsOnboarding, router]);
 
   const [lastEvent, setLastEvent] = useState<{
     title: string;
@@ -79,12 +93,20 @@ export function GamePageClient() {
     );
   }
 
-  if (initData && !player) {
+  if (initData && !player && !needsOnboarding) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
         <p className="text-center text-muted-foreground">
           Не удалось загрузить профиль. Откройте приложение из Telegram.
         </p>
+      </div>
+    );
+  }
+
+  if (initData && needsOnboarding) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <p className="text-muted-foreground">Переход к выбору профессии...</p>
       </div>
     );
   }

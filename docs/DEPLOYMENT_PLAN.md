@@ -89,9 +89,12 @@ create policy "Service role full access" on public.players
 - [x] `usePlayer()` — auth, doAction, refresh
 - [x] Главная — GamePageClient с реальными данными и кнопками действий
 
-### 2.6 Выбор профессии (отложено)
+### 2.6 Онбординг ✅
 
-- [ ] Страница `/profession` — смена профессии, API для обновления
+- [x] `/onboarding` — выбор профессии при первом заходе
+- [x] API auth возвращает `needsOnboarding` для новых юзеров
+- [x] Инициализация skills (ветки 0) при создании игрока
+- [ ] Страница `/profession` — смена профессии (отложено)
 
 ---
 
