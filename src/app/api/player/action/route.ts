@@ -57,16 +57,22 @@ export async function POST(request: Request) {
         ? { title: result.event.title, description: result.event.description }
         : null;
 
+    const updatePayload: Record<string, unknown> = {
+      energy: result.player.energy,
+      exp: result.player.exp,
+      money: result.player.money,
+      reputation: result.player.reputation,
+      ...(lastEventJson !== null && { last_event: lastEventJson }),
+      updated_at: new Date().toISOString(),
+    };
+
+    if (action === "rest" && result.player.lastRestAt != null) {
+      updatePayload.last_rest_at = result.player.lastRestAt;
+    }
+
     const { error: updateError } = await supabase
       .from("players")
-      .update({
-        energy: result.player.energy,
-        exp: result.player.exp,
-        money: result.player.money,
-        reputation: result.player.reputation,
-        ...(lastEventJson !== null && { last_event: lastEventJson }),
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("telegram_id", telegramId);
 
     if (updateError) {

@@ -30,3 +30,12 @@ export interface InterviewQuestion {
   text: string;
   profession: string;
 }
+
+/** Событие отдыха: даёт разное кол-во энергии */
+export interface RestEvent {
+  id: string;
+  title: string;
+  description: string;
+  /** Сколько энергии восстанавливается (1–7) */
+  energyGain: number;
+}

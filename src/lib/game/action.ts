@@ -5,10 +5,10 @@ import {
   ENERGY_PER_ACTION,
   EXP_LEARN_MIN,
   EXP_LEARN_MAX,
-  ENERGY_RESTORE,
+  REST_COOLDOWN_MINUTES,
 } from "./constants";
 import { calcTaskIncome, getRandomTaskExp, mitigateNegativeEffect } from "./skills";
-import { pickRandomEvent } from "./events";
+import { pickRandomEvent, pickRandomRestEvent } from "./events";
 
 export interface ActionResult {
   player: Player;
@@ -95,10 +95,33 @@ export function executeTask(player: Player): ActionResult {
 }
 
 export function executeRest(player: Player): ActionResult {
-  const newEnergy = Math.min(MAX_ENERGY, player.energy + ENERGY_RESTORE);
+  const now = new Date();
+  const lastRestAt = player.lastRestAt ? new Date(player.lastRestAt) : null;
+  if (lastRestAt) {
+    const elapsedMs = now.getTime() - lastRestAt.getTime();
+    const cooldownMs = REST_COOLDOWN_MINUTES * 60 * 1000;
+    if (elapsedMs < cooldownMs) {
+      const leftMin = Math.ceil((cooldownMs - elapsedMs) / 60000);
+      throw new Error(`Отдых ещё через ${leftMin} мин`);
+    }
+  }
+
+  const restEvent = pickRandomRestEvent();
+  const newEnergy = Math.min(MAX_ENERGY, player.energy + restEvent.energyGain);
+
+  const event: GameEvent = {
+    id: restEvent.id,
+    title: restEvent.title,
+    description: `${restEvent.description} (+${restEvent.energyGain} энергии)`,
+    tone: "neutral",
+    effects: [],
+  };
+
   const updated: Player = {
     ...player,
     energy: newEnergy,
+    lastRestAt: now.toISOString(),
   };
-  return { player: updated };
+
+  return { player: updated, event };
 }

@@ -17,12 +17,18 @@ export const EXP_FOR_INTERVIEW: Record<number, number> = {
   5: 0, // Lead — не повышаемся
 };
 
+// Навыки: EXP за один уровень навыка (0→1 = 20, 1→2 = 20, ...)
+export const SKILL_UPGRADE_EXP_COST = 20;
+
+// Отдых: кулдаун в минутах (нельзя спамить кнопку)
+export const REST_COOLDOWN_MINUTES = 20;
+
 // Экономика
-export const EXP_PER_TASK_MIN = 5;
-export const EXP_PER_TASK_MAX = 15;
-export const EXP_LEARN_MIN = 3;
-export const EXP_LEARN_MAX = 8;
-export const ENERGY_RESTORE = 5;
+export const EXP_PER_TASK_MIN = 6;
+export const EXP_PER_TASK_MAX = 14;
+export const EXP_LEARN_MIN = 4;
+export const EXP_LEARN_MAX = 9;
+export const ENERGY_RESTORE = 5; // дефолт/среднее, реально — из события
 export const BASE_INCOME_PER_LEVEL: Record<number, number> = {
   0: 0,
   1: 50,

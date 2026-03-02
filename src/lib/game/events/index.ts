@@ -1,4 +1,37 @@
-import type { GameEvent } from "@/types/game";
+import type { GameEvent, RestEvent } from "@/types/game";
+
+/** События отдыха: разное кол-во энергии в зависимости от исхода */
+export const REST_EVENTS: RestEvent[] = [
+  { id: "r1", title: "Залипал в YouTube", description: "3 часа Shorts пролетели", energyGain: 2 },
+  { id: "r2", title: "Крепкий сон", description: "Выспался как младенец", energyGain: 6 },
+  { id: "r3", title: "Кофе + прогулка", description: "Свежий воздух взбодрил", energyGain: 4 },
+  { id: "r4", title: "Серия на диване", description: "Ещё одна — и точно спать", energyGain: 3 },
+  { id: "r5", title: "Долгий душ", description: "Водные процедуры", energyGain: 4 },
+  { id: "r6", title: "Дрем в транспорте", description: "Проехал свою остановку", energyGain: 2 },
+  { id: "r7", title: "Медитация 10 мин", description: "Ом", energyGain: 3 },
+  { id: "r8", title: "Спортивная тренировка", description: "Эндорфины в деле", energyGain: 5 },
+  { id: "r9", title: "Перекус и чай", description: "Сахар + кофеин", energyGain: 3 },
+  { id: "r10", title: "Сон до обеда", description: "Выходной удался", energyGain: 7 },
+  { id: "r11", title: "Залёт в TikTok", description: "Час контента", energyGain: 1 },
+  { id: "r12", title: "Прогулка в парке", description: "Солнце и деревья", energyGain: 5 },
+  { id: "r13", title: "Массаж плеч", description: "Самомассаж, но помогло", energyGain: 3 },
+  { id: "r14", title: "Обнимашки с котом", description: "Мурчание лечит", energyGain: 4 },
+  { id: "r15", title: "Игры до трёх ночи", description: "Ещё один раунд...", energyGain: 1 },
+  { id: "r16", title: "Дневной сон 20 мин", description: "Power nap сработал", energyGain: 5 },
+  { id: "r17", title: "Контрастный душ", description: "Бодрость на весь день", energyGain: 6 },
+  {
+    id: "r18",
+    title: "Скролл соцсетей",
+    description: "Прокрастинация, но отдохнул",
+    energyGain: 2,
+  },
+  { id: "r19", title: "Ванна с книгой", description: "Релакс по полной", energyGain: 5 },
+  { id: "r20", title: "Качание в кресле", description: "Просто сидел и качался", energyGain: 2 },
+];
+
+export function pickRandomRestEvent(): RestEvent {
+  return REST_EVENTS[Math.floor(Math.random() * REST_EVENTS.length)]!;
+}
 
 /** Универсальные события (10 шт в MVP) */
 export const UNIVERSAL_EVENTS: GameEvent[] = [

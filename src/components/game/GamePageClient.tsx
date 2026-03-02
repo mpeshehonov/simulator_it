@@ -12,7 +12,12 @@ import {
   CardFooter,
   Badge,
 } from "@/components/ui/pixelact-ui";
-import { CAREER_LEVELS, MAX_ENERGY, EXP_FOR_INTERVIEW } from "@/lib/game/constants";
+import {
+  CAREER_LEVELS,
+  MAX_ENERGY,
+  EXP_FOR_INTERVIEW,
+  REST_COOLDOWN_MINUTES,
+} from "@/lib/game/constants";
 import { PROFESSION_NAMES } from "@/lib/game/professions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
@@ -95,7 +100,21 @@ export function GamePageClient() {
 
   const canAct = player && player.energy >= 1;
 
-  const expForInterview = data ? EXP_FOR_INTERVIEW[data.level] ?? 0 : 0;
+  const restCooldownMs = REST_COOLDOWN_MINUTES * 60 * 1000;
+  const lastRestAt = player?.lastRestAt ? new Date(player.lastRestAt).getTime() : 0;
+  const restElapsed = Date.now() - lastRestAt;
+  const canRest = restElapsed >= restCooldownMs;
+  const restCooldownLeftMin =
+    !canRest && lastRestAt ? Math.ceil((restCooldownMs - restElapsed) / 60000) : 0;
+
+  const [, setRestTick] = useState(0);
+  useEffect(() => {
+    if (!player?.lastRestAt || canRest) return;
+    const id = setInterval(() => setRestTick((t) => t + 1), 10000);
+    return () => clearInterval(id);
+  }, [player?.lastRestAt, canRest]);
+
+  const expForInterview = data ? (EXP_FOR_INTERVIEW[data.level] ?? 0) : 0;
   const canGoToInterview = data != null && data.exp >= expForInterview;
 
   const displayLastEvent = lastEvent ?? player?.lastEvent ?? null;
@@ -224,10 +243,19 @@ export function GamePageClient() {
                     variant="secondary"
                     size="sm"
                     className="w-full"
-                    disabled={!!actionLoading}
+                    disabled={!!actionLoading || !canRest}
                     onClick={() => handleAction("rest")}
+                    title={
+                      !canRest && restCooldownLeftMin > 0
+                        ? `Отдых через ${restCooldownLeftMin} мин`
+                        : undefined
+                    }
                   >
-                    {actionLoading === "rest" ? "..." : "🛌 Отдых"}
+                    {actionLoading === "rest"
+                      ? "..."
+                      : !canRest && restCooldownLeftMin > 0
+                        ? `🛌 Отдых (${restCooldownLeftMin} мин)`
+                        : "🛌 Отдых"}
                   </Button>
                 </div>
               </CardFooter>

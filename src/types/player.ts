@@ -15,6 +15,7 @@ export interface Player {
   energyUpdatedAt: string;
   skills: Record<string, number>;
   lastInterviewAt: string | null;
+  lastRestAt: string | null;
   /** Последнее событие (с сервера), показывается при входе */
   lastEvent?: LastEvent | null;
   createdAt: string;

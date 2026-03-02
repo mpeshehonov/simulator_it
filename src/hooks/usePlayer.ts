@@ -15,6 +15,8 @@ interface UsePlayerResult {
   error: string | null;
   needsOnboarding: boolean;
   completeOnboarding: (profession: string) => Promise<boolean>;
+  updateProfession: (profession: string) => Promise<boolean>;
+  upgradeSkill: (branchId: string) => Promise<{ ok: boolean; error?: string }>;
   refresh: () => Promise<void>;
   doAction: (action: ActionType) => Promise<{
     ok: boolean;
@@ -101,6 +103,53 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
     [initData, actions]
   );
 
+  const updateProfession = useCallback(
+    async (profession: string): Promise<boolean> => {
+      if (!initData) return false;
+      const opts: RequestInit = {
+        method: "PATCH",
+        ...defaultFetchOptions,
+        body: JSON.stringify({ profession }),
+        headers: {
+          ...defaultFetchOptions.headers,
+          "X-Telegram-Init-Data": initData,
+        } as HeadersInit,
+      };
+      const res = await fetch("/api/player", opts);
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data.player) {
+        actions.setPlayer(data.player);
+        return true;
+      }
+      return false;
+    },
+    [initData, actions]
+  );
+
+  const upgradeSkill = useCallback(
+    async (branchId: string): Promise<{ ok: boolean; error?: string }> => {
+      if (!initData) return { ok: false, error: "No initData" };
+      const opts: RequestInit = {
+        method: "POST",
+        ...defaultFetchOptions,
+        body: JSON.stringify({ branchId }),
+        headers: {
+          ...defaultFetchOptions.headers,
+          "X-Telegram-Init-Data": initData,
+        } as HeadersInit,
+      };
+      const res = await fetch("/api/player/skill", opts);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.player) {
+        actions.setPlayer(data.player);
+        return { ok: true };
+      }
+      return { ok: false, error: data.error ?? "Failed to upgrade" };
+    },
+    [initData, actions]
+  );
+
   const refresh = useCallback(async () => {
     if (!initData) return;
     actions.setLoading(true);
@@ -156,6 +205,8 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
     error,
     needsOnboarding,
     completeOnboarding,
+    updateProfession,
+    upgradeSkill,
     refresh,
     doAction,
   };

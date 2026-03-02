@@ -12,6 +12,7 @@ export interface PlayerRow {
   energy_updated_at: string;
   skills: Record<string, number>;
   last_interview_at: string | null;
+  last_rest_at?: string | null;
   last_event?: { title: string; description: string } | null;
   created_at: string;
   updated_at: string;
@@ -30,6 +31,7 @@ export function rowToPlayer(row: PlayerRow): Player {
     energyUpdatedAt: row.energy_updated_at,
     skills: (row.skills as Record<string, number>) ?? {},
     lastInterviewAt: row.last_interview_at,
+    lastRestAt: row.last_rest_at ?? null,
     lastEvent: row.last_event ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
