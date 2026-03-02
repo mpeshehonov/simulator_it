@@ -1,4 +1,3 @@
-import type { ProfessionId } from "../professions";
 import { BASE_INCOME_PER_LEVEL, INTERVIEW_BASE_SUCCESS_CHANCE } from "../constants";
 
 /** Множитель дохода за 1 уровень навыка ветки (сумма по всем веткам) */

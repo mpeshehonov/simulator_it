@@ -3,10 +3,7 @@ import { validateInitData, parseInitDataUser } from "@/lib/telegram/validate";
 import { getPlayerCookieHeader } from "@/lib/telegram/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { rowToPlayer } from "@/lib/db/player";
-import {
-  type ProfessionId,
-  PROFESSION_SKILL_BRANCHES,
-} from "@/lib/game/professions";
+import { type ProfessionId, PROFESSION_SKILL_BRANCHES } from "@/lib/game/professions";
 
 export async function POST(request: Request) {
   try {
@@ -17,10 +14,7 @@ export async function POST(request: Request) {
     if (!validation.ok) {
       if (validation.reason === "no_token") {
         console.error("[auth] TELEGRAM_BOT_TOKEN not set in env");
-        return NextResponse.json(
-          { error: "Server config error" },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: "Server config error" }, { status: 500 });
       }
       if (validation.reason === "no_init_data") {
         return NextResponse.json(

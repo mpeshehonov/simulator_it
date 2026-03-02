@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import type { Player } from "@/types/player";
+import { useEffect, useCallback } from "react";
 import type { ActionType } from "@/types/game";
+import type { Player } from "@/types/player";
+import { useAppStore } from "@/store/app";
 
 interface UsePlayerOptions {
   initData: string;
@@ -29,21 +30,18 @@ const defaultFetchOptions: RequestInit = {
 };
 
 export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
-  const [player, setPlayer] = useState<Player | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const { player, isLoading, error, needsOnboarding, actions } = useAppStore();
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
-      setIsLoading(true);
-      setError(null);
-      setNeedsOnboarding(false);
+      actions.setLoading(true);
+      actions.setError(null);
+      actions.setNeedsOnboarding(false);
       try {
         if (!initData) {
-          setPlayer(null);
+          actions.setPlayer(null);
           return;
         }
         const res = await fetch("/api/auth/telegram", {
@@ -55,22 +53,22 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
           if (data.needsOnboarding) {
-            setNeedsOnboarding(true);
-            setPlayer(null);
+            actions.setNeedsOnboarding(true);
+            actions.setPlayer(null);
           } else if (data.player) {
-            setPlayer(data.player);
+            actions.setPlayer(data.player);
           }
         } else {
-          setPlayer(null);
-          setError("Auth failed");
+          actions.setPlayer(null);
+          actions.setError("Auth failed");
         }
       } catch {
         if (!cancelled) {
-          setError("Network error");
-          setPlayer(null);
+          actions.setError("Network error");
+          actions.setPlayer(null);
         }
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) actions.setLoading(false);
       }
     }
 
@@ -78,7 +76,7 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
     return () => {
       cancelled = true;
     };
-  }, [initData]);
+  }, [initData, actions]);
 
   const completeOnboarding = useCallback(
     async (profession: string): Promise<boolean> => {
@@ -91,18 +89,18 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
       if (!res.ok) return false;
       const data = await res.json();
       if (data.player) {
-        setPlayer(data.player);
-        setNeedsOnboarding(false);
+        actions.setPlayer(data.player);
+        actions.setNeedsOnboarding(false);
         return true;
       }
       return false;
     },
-    [initData]
+    [initData, actions]
   );
 
   const refresh = useCallback(async () => {
     if (!initData) return;
-    setIsLoading(true);
+    actions.setLoading(true);
     try {
       const opts: RequestInit = {
         ...defaultFetchOptions,
@@ -114,12 +112,12 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
       const res = await fetch("/api/player", opts);
       if (res.ok) {
         const { player: p } = await res.json();
-        setPlayer(p);
+        actions.setPlayer(p);
       }
     } finally {
-      setIsLoading(false);
+      actions.setLoading(false);
     }
-  }, [initData]);
+  }, [initData, actions]);
 
   const doAction = useCallback(
     async (action: ActionType) => {
@@ -136,7 +134,7 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
       const res = await fetch("/api/player/action", opts);
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setPlayer(data.player);
+        actions.setPlayer(data.player);
         return {
           ok: true,
           event: data.event,
@@ -146,7 +144,7 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
       }
       return { ok: false };
     },
-    [player, initData]
+    [player, initData, actions]
   );
 
   return {

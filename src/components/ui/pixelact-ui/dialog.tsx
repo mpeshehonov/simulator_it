@@ -21,6 +21,8 @@ const Dialog = ({ ...props }: React.ComponentProps<typeof ShadcnDialog>) => {
   return <ShadcnDialog {...props} />;
 };
 
+Dialog.displayName = "PixelDialog";
+
 const DialogTitle = React.forwardRef<
   React.ComponentRef<typeof ShadcnDialogTitle>,
   React.ComponentPropsWithoutRef<typeof ShadcnDialogTitle>
@@ -33,6 +35,8 @@ const DialogTitle = React.forwardRef<
     />
   );
 });
+
+DialogTitle.displayName = "PixelDialogTitle";
 
 const DialogContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
@@ -67,6 +71,8 @@ const DialogContent = React.forwardRef<
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
+
+DialogContent.displayName = "PixelDialogContent";
 
 export {
   Dialog,

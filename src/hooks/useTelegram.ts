@@ -1,34 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        initData: string;
-        ready: () => void;
-        expand: () => void;
-        close: () => void;
-      };
-    };
-  }
-}
+import { useEffect } from "react";
+import { useAppStore } from "@/store/app";
 
 export function useTelegram() {
-  const [webApp, setWebApp] = useState<Window["Telegram"] | null>(null);
-  const [initData, setInitData] = useState("");
+  const { initData, telegramReady, actions } = useAppStore();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const tg = window.Telegram;
-    if (tg?.WebApp) {
+    if (tg?.WebApp && !telegramReady) {
       tg.WebApp.ready();
       tg.WebApp.expand();
-      setWebApp(tg);
-      setInitData(tg.WebApp.initData || "");
+      const data = tg.WebApp.initData || "";
+      actions.setInitData(data);
+      actions.setTelegramReady(true);
     }
-  }, []);
+  }, [telegramReady, actions]);
 
-  return { webApp: webApp?.WebApp ?? null, initData };
+  const webApp =
+    typeof window !== "undefined" && window.Telegram?.WebApp ? window.Telegram.WebApp : null;
+
+  return { webApp, initData };
 }

@@ -2,7 +2,10 @@ import crypto from "node:crypto";
 
 export type ValidateInitDataResult =
   | { ok: true }
-  | { ok: false; reason: "no_init_data" | "no_token" | "no_hash" | "invalid_signature" | "parse_error" };
+  | {
+      ok: false;
+      reason: "no_init_data" | "no_token" | "no_hash" | "invalid_signature" | "parse_error";
+    };
 
 /**
  * Валидация initData от Telegram WebApp (HMAC-SHA256).

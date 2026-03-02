@@ -17,7 +17,7 @@ import { LoadingScreen } from "@/components/game/LoadingScreen";
 export default function OnboardingPage() {
   const router = useRouter();
   const { initData } = useTelegram();
-  const { player, isLoading, needsOnboarding, completeOnboarding } = usePlayer({
+  const { player, isLoading, completeOnboarding } = usePlayer({
     initData,
   });
   const [selected, setSelected] = useState<ProfessionId | null>(null);
@@ -78,9 +78,7 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-background p-4 pb-8">
       <div className="mx-auto max-w-md space-y-8">
         <header className="py-8 text-center">
-          <h1 className="pixel-font text-xl text-primary">
-            Симулятор айтишника
-          </h1>
+          <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
           <p className="mt-4 text-sm text-muted-foreground">
             Добро пожаловать! Выбери профессию и начни карьеру в IT.
           </p>
@@ -117,9 +115,7 @@ export default function OnboardingPage() {
           </CardContent>
         </Card>
 
-        {error && (
-          <p className="text-center text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="text-center text-sm text-destructive">{error}</p>}
 
         <Button
           variant="success"

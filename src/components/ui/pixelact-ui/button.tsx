@@ -47,4 +47,6 @@ const Button = React.forwardRef<React.ComponentRef<typeof ShadcnButton>, PixelBu
   }
 );
 
+Button.displayName = "PixelButton";
+
 export { Button };
