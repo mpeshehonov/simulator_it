@@ -22,6 +22,8 @@ export interface GameEvent {
 export interface SkillBranch {
   id: string;
   name: string;
+  /** Краткое описание для новичков, без жаргона */
+  description?: string;
   maxLevel: number;
 }
 

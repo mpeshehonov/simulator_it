@@ -40,32 +40,43 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
 
   return (
     <Card className="overflow-hidden">
-      <CardContent className="flex flex-row items-center justify-between gap-4 p-4">
-        <div className="min-w-0 flex-1">
-          <p className="font-medium">{branch.name}</p>
-          <p className="text-xs text-muted-foreground">
-            Уровень {currentLevel} / {branch.maxLevel}
-          </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {!isMax && (
-            <span className="text-[10px] text-muted-foreground">{SKILL_UPGRADE_EXP_COST} EXP</span>
-          )}
-          <Button
-            variant={isMax ? "secondary" : "default"}
-            size="sm"
-            disabled={!canUpgrade || loading}
-            onClick={handleUpgrade}
-            title={
-              isMax
-                ? "Максимальный уровень"
-                : !canUpgrade
-                  ? `Нужно ${SKILL_UPGRADE_EXP_COST} EXP`
-                  : undefined
-            }
-          >
-            {loading ? "..." : isMax ? "Макс" : "+1"}
-          </Button>
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="pixel-font text-xs font-medium leading-tight break-words sm:text-[10px]">
+              {branch.name}
+            </p>
+            <p className="mt-0.5 pixel-font text-[10px] text-muted-foreground">
+              Ур. {currentLevel}/{branch.maxLevel}
+            </p>
+            {branch.description && (
+              <p className="mt-1 text-[10px] text-muted-foreground leading-snug">
+                {branch.description}
+              </p>
+            )}
+          </div>
+          <div className="flex shrink-0 items-center gap-2 self-end sm:self-center">
+            {!isMax && (
+              <span className="pixel-font text-[10px] text-muted-foreground">
+                {SKILL_UPGRADE_EXP_COST} EXP
+              </span>
+            )}
+            <Button
+              variant={isMax ? "secondary" : "default"}
+              size="sm"
+              disabled={!canUpgrade || loading}
+              onClick={handleUpgrade}
+              title={
+                isMax
+                  ? "Максимальный уровень"
+                  : !canUpgrade
+                    ? `Нужно ${SKILL_UPGRADE_EXP_COST} EXP`
+                    : undefined
+              }
+            >
+              {loading ? "..." : isMax ? "Макс" : "+1"}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -74,7 +85,7 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
 
 export default function SkillsPage() {
   const router = useRouter();
-  const { initData } = useTelegram();
+  const { initData, webApp } = useTelegram();
   const { player, isLoading, upgradeSkill } = usePlayer({ initData });
   const [error, setError] = useState<string | null>(null);
 
@@ -83,6 +94,18 @@ export default function SkillsPage() {
       router.replace("/");
     }
   }, [isLoading, initData, player, router]);
+
+  useEffect(() => {
+    const back = webApp?.BackButton;
+    if (!back) return;
+    back.show();
+    const handler = () => router.back();
+    back.onClick(handler);
+    return () => {
+      back.offClick(handler);
+      back.hide();
+    };
+  }, [webApp, router]);
 
   const handleUpgrade = async (branchId: string) => {
     setError(null);
@@ -96,7 +119,9 @@ export default function SkillsPage() {
   if (!initData) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-        <p className="text-center text-muted-foreground">Откройте приложение из Telegram.</p>
+        <p className="text-center pixel-font text-xs text-muted-foreground">
+          Откройте приложение из Telegram.
+        </p>
         <Link href="/">
           <Button variant="secondary">На главную</Button>
         </Link>
@@ -116,11 +141,15 @@ export default function SkillsPage() {
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
       <div className="mx-auto max-w-md space-y-6">
         <header className="flex items-center justify-between py-4">
-          <Link href="/">
-            <Button variant="secondary" size="sm">
-              ← Назад
-            </Button>
-          </Link>
+          {!initData ? (
+            <Link href="/">
+              <Button variant="secondary" size="sm">
+                ← Назад
+              </Button>
+            </Link>
+          ) : (
+            <div />
+          )}
           <h1 className="pixel-font text-lg text-primary">Навыки</h1>
           <div className="w-16" />
         </header>
@@ -128,24 +157,24 @@ export default function SkillsPage() {
         <Card>
           <CardContent className="flex flex-row items-center justify-between gap-4 py-4">
             <div>
-              <p className="text-xs text-muted-foreground">Опыт для прокачки</p>
-              <p className="font-medium">
+              <p className="pixel-font text-[10px] text-muted-foreground">Опыт для прокачки</p>
+              <p className="pixel-font text-sm font-medium">
                 <AnimatedNumber value={player.exp} suffix=" EXP" countDuration={0} />
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-muted-foreground">{PROFESSION_NAMES[profession]}</p>
+              <p className="pixel-font text-[10px] text-muted-foreground">
+                {PROFESSION_NAMES[profession]}
+              </p>
               <p className="text-lg">{PROFESSION_ICONS[profession]}</p>
             </div>
           </CardContent>
         </Card>
 
         <div>
-          <h2 className="mb-3 text-sm font-medium text-muted-foreground">Ветки навыков</h2>
-          <p className="mb-4 text-xs text-muted-foreground">
-            Каждый уровень навыка: {SKILL_UPGRADE_EXP_COST} EXP. Ветки усиливают доход и шанс успеха
-            на собеседовании.
-          </p>
+          <h2 className="mb-2 pixel-font text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+            Ветки навыков
+          </h2>
           <div className="space-y-3">
             {branches.map((branch) => (
               <SkillCard
@@ -159,7 +188,20 @@ export default function SkillsPage() {
           </div>
         </div>
 
-        {error && <p className="text-center text-sm text-destructive">{error}</p>}
+        <Card className="overflow-hidden">
+          <CardContent className="space-y-2 py-4">
+            <p className="pixel-font text-[10px] font-medium text-muted-foreground">
+              Как работают навыки
+            </p>
+            <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+              Один уровень = {SKILL_UPGRADE_EXP_COST} EXP. Чем выше сумма уровней по всем веткам —
+              тем больше доход с задач и шанс пройти собеседование. При смене профессии ветки
+              навыков обнуляются под новую профессию.
+            </p>
+          </CardContent>
+        </Card>
+
+        {error && <p className="text-center pixel-font text-xs text-destructive">{error}</p>}
       </div>
     </div>
   );

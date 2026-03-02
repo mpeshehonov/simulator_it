@@ -16,7 +16,7 @@ import { LoadingScreen } from "@/components/game/LoadingScreen";
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { initData } = useTelegram();
+  const { initData, webApp } = useTelegram();
   const { player, isLoading, completeOnboarding } = usePlayer({
     initData,
   });
@@ -24,12 +24,23 @@ export default function OnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Уже есть игрок — на главную
   useEffect(() => {
     if (!isLoading && player) {
       router.replace("/");
     }
   }, [player, isLoading, router]);
+
+  useEffect(() => {
+    const back = webApp?.BackButton;
+    if (!back) return;
+    back.show();
+    const handler = () => router.back();
+    back.onClick(handler);
+    return () => {
+      back.offClick(handler);
+      back.hide();
+    };
+  }, [webApp, router]);
 
   // Нет initData — не из Telegram
   if (!initData) {

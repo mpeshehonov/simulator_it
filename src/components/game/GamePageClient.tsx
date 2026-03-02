@@ -220,7 +220,7 @@ export function GamePageClient() {
             {player && (
               <CardFooter className="flex flex-col gap-2">
                 <p className="w-full text-center text-[10px] text-muted-foreground">Действия</p>
-                <div className="flex flex-col gap-2 sm:grid sm:grid-cols-3">
+                <div className="flex w-full flex-col gap-2 sm:grid sm:grid-cols-3">
                   <Button
                     variant="default"
                     size="sm"

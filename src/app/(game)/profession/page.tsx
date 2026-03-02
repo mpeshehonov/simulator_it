@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui/pixelact-ui";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Badge,
+} from "@/components/ui/pixelact-ui";
 import {
   PROFESSIONS,
   PROFESSION_NAMES,
@@ -17,7 +24,7 @@ import { LoadingScreen } from "@/components/game/LoadingScreen";
 
 export default function ProfessionPage() {
   const router = useRouter();
-  const { initData } = useTelegram();
+  const { initData, webApp } = useTelegram();
   const { player, isLoading, updateProfession } = usePlayer({ initData });
   const [selected, setSelected] = useState<ProfessionId | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -28,6 +35,18 @@ export default function ProfessionPage() {
       router.replace("/");
     }
   }, [isLoading, initData, player, router]);
+
+  useEffect(() => {
+    const back = webApp?.BackButton;
+    if (!back) return;
+    back.show();
+    const handler = () => router.back();
+    back.onClick(handler);
+    return () => {
+      back.offClick(handler);
+      back.hide();
+    };
+  }, [webApp, router]);
 
   if (!initData) {
     return (
@@ -74,43 +93,50 @@ export default function ProfessionPage() {
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
       <div className="mx-auto max-w-md space-y-6">
         <header className="flex items-center justify-between py-4">
-          <Link href="/">
-            <Button variant="secondary" size="sm">
-              ← Назад
-            </Button>
-          </Link>
+          {!initData ? (
+            <Link href="/">
+              <Button variant="secondary" size="sm">
+                ← Назад
+              </Button>
+            </Link>
+          ) : (
+            <div />
+          )}
           <h1 className="pixel-font text-lg text-primary">Сменить профессию</h1>
           <div className="w-16" />
         </header>
 
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-base">Выбери профессию</CardTitle>
-            <p className="text-xs text-muted-foreground">
+            <CardTitle className="pixel-font text-sm">Выбери профессию</CardTitle>
+            <p className="pixel-font text-[10px] text-muted-foreground">
               Смена профессии сбросит все навыки до нуля
             </p>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 overflow-hidden">
             {PROFESSIONS.map((id) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => setSelected(id)}
-                className={`flex w-full items-start gap-3 rounded-lg border-2 px-4 py-3 text-left transition-colors ${
+                className={`relative flex w-full items-start gap-3 overflow-hidden rounded-lg border-2 px-4 py-3 text-left transition-colors ${
                   selected === id
                     ? "border-primary bg-primary/10"
                     : "border-border bg-card hover:border-muted-foreground/30"
                 }`}
               >
-                <span className="text-2xl">{PROFESSION_ICONS[id]}</span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium">{PROFESSION_NAMES[id]}</p>
-                    {id === currentProfession && (
-                      <span className="text-[10px] text-muted-foreground">(текущая)</span>
-                    )}
-                  </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                {id === currentProfession && (
+                  <Badge
+                    variant="secondary"
+                    className="absolute right-2 top-2 shrink-0 pixel-font text-[8px]"
+                  >
+                    Текущая
+                  </Badge>
+                )}
+                <span className="shrink-0 text-2xl">{PROFESSION_ICONS[id]}</span>
+                <div className="min-w-0 flex-1 pr-12">
+                  <p className="truncate font-medium">{PROFESSION_NAMES[id]}</p>
+                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                     {PROFESSION_DESCRIPTIONS[id]}
                   </p>
                 </div>
