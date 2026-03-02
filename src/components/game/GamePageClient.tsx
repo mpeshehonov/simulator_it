@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Button,
@@ -17,6 +17,8 @@ import { PROFESSION_NAMES } from "@/lib/game/professions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
+import { AnimatedNumber } from "@/components/game/AnimatedNumber";
+import { useAppStore } from "@/store/app";
 
 const MOCK_PLAYER = {
   profession: "frontend" as const,
@@ -41,11 +43,24 @@ export function GamePageClient() {
     }
   }, [isLoading, initData, needsOnboarding, router]);
 
+  useEffect(
+    () => () => {
+      if (deltasTimeoutRef.current) clearTimeout(deltasTimeoutRef.current);
+    },
+    []
+  );
+
   const [lastEvent, setLastEvent] = useState<{
     title: string;
     description: string;
   } | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [lastDeltas, setLastDeltas] = useState<{
+    exp?: number;
+    money?: number;
+    energy?: number;
+  }>({});
+  const deltasTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const data = player ?? (initData ? null : MOCK_PLAYER);
   const levelInfo = data ? CAREER_LEVELS[data.level] : null;
@@ -63,6 +78,15 @@ export function GamePageClient() {
           title: result.event.title,
           description: result.event.description,
         });
+        const newPlayer = useAppStore.getState().player;
+        const energyDelta = newPlayer ? newPlayer.energy - player.energy : 0;
+        if (deltasTimeoutRef.current) clearTimeout(deltasTimeoutRef.current);
+        setLastDeltas({
+          exp: result.expGained ?? 0,
+          money: result.moneyGained ?? 0,
+          energy: energyDelta !== 0 ? energyDelta : undefined,
+        });
+        deltasTimeoutRef.current = setTimeout(() => setLastDeltas({}), 1200);
       }
     } finally {
       setActionLoading(null);
@@ -71,7 +95,7 @@ export function GamePageClient() {
 
   const canAct = player && player.energy >= 1;
 
-  if (initData && isLoading && !needsOnboarding) {
+  if (initData && isLoading && !needsOnboarding && !player) {
     return <LoadingScreen />;
   }
 
@@ -121,7 +145,12 @@ export function GamePageClient() {
                   <span className="text-lg">⚡</span>
                   <div>
                     <p className="font-medium">
-                      {data.energy}/{MAX_ENERGY}
+                      <AnimatedNumber
+                        value={data.energy}
+                        suffix={`/${MAX_ENERGY}`}
+                        delta={lastDeltas.energy}
+                        countDuration={350}
+                      />
                     </p>
                     <p className="text-[10px] text-muted-foreground">Энергия</p>
                   </div>
@@ -129,14 +158,28 @@ export function GamePageClient() {
                 <div className="flex items-center gap-2 rounded bg-muted/50 px-3 py-2">
                   <span className="text-lg">💰</span>
                   <div>
-                    <p className="font-medium">{data.money}$</p>
+                    <p className="font-medium">
+                      <AnimatedNumber
+                        value={data.money}
+                        suffix="$"
+                        delta={lastDeltas.money}
+                        countDuration={350}
+                      />
+                    </p>
                     <p className="text-[10px] text-muted-foreground">Деньги</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 rounded bg-muted/50 px-3 py-2">
                   <span className="text-lg">📘</span>
                   <div>
-                    <p className="font-medium">{data.exp} EXP</p>
+                    <p className="font-medium">
+                      <AnimatedNumber
+                        value={data.exp}
+                        suffix=" EXP"
+                        delta={lastDeltas.exp}
+                        countDuration={350}
+                      />
+                    </p>
                     <p className="text-[10px] text-muted-foreground">Опыт</p>
                   </div>
                 </div>
@@ -153,7 +196,7 @@ export function GamePageClient() {
             {player && (
               <CardFooter className="flex flex-col gap-2">
                 <p className="w-full text-center text-[10px] text-muted-foreground">Действия</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="flex flex-col gap-2 sm:grid sm:grid-cols-3">
                   <Button
                     variant="default"
                     size="sm"

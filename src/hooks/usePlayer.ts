@@ -36,9 +36,12 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
     let cancelled = false;
 
     async function load() {
-      actions.setLoading(true);
-      actions.setError(null);
-      actions.setNeedsOnboarding(false);
+      const hasPlayer = useAppStore.getState().player != null;
+      if (!hasPlayer) {
+        actions.setLoading(true);
+        actions.setError(null);
+        actions.setNeedsOnboarding(false);
+      }
       try {
         if (!initData) {
           actions.setPlayer(null);
@@ -68,7 +71,7 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
           actions.setPlayer(null);
         }
       } finally {
-        if (!cancelled) actions.setLoading(false);
+        if (!cancelled && !hasPlayer) actions.setLoading(false);
       }
     }
 

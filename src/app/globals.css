@@ -151,7 +151,33 @@
   }
 }
 
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 0.4s ease-in-out 2;
+}
+
+/* Safe area: Telegram Mini App задаёт --tg-*-inset-* (Bot API 8.0+).
+   Стандартные env(safe-area-inset-*) работают в iOS Safari и в полноэкранном WebApp. */
 .app-safe-top {
-  padding-top: calc(env(safe-area-inset-top) + 16px);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: calc(
+    max(
+      env(safe-area-inset-top, 0px),
+      var(--tg-content-safe-area-inset-top, 0px),
+      var(--tg-safe-area-inset-top, 0px)
+    ) + 16px
+  );
+  padding-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    var(--tg-content-safe-area-inset-bottom, 0px),
+    var(--tg-safe-area-inset-bottom, 0px)
+  );
 }
