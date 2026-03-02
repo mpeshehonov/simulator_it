@@ -12,6 +12,7 @@ import {
 } from "@/lib/game/professions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
+import { LoadingScreen } from "@/components/game/LoadingScreen";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -42,11 +43,7 @@ export default function OnboardingPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-muted-foreground">Загрузка...</p>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // Игрок есть — редирект обрабатывается в useEffect

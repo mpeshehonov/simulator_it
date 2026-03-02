@@ -97,7 +97,15 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("Insert player error:", error);
-      return NextResponse.json({ error: "Failed to create player" }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: "Failed to create player",
+          code: error.code,
+          message: error.message,
+          details: error.details,
+        },
+        { status: 500 }
+      );
     }
 
     const response = NextResponse.json({

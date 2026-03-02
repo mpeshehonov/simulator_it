@@ -16,6 +16,7 @@ import { CAREER_LEVELS, MAX_ENERGY } from "@/lib/game/constants";
 import { PROFESSION_NAMES } from "@/lib/game/professions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
+import { LoadingScreen } from "@/components/game/LoadingScreen";
 
 const MOCK_PLAYER = {
   profession: "frontend" as const,
@@ -30,13 +31,9 @@ const MOCK_PLAYER = {
 export function GamePageClient() {
   const router = useRouter();
   const { initData } = useTelegram();
-  const {
-    player,
-    isLoading,
-    error,
-    needsOnboarding,
-    doAction,
-  } = usePlayer({ initData });
+  const { player, isLoading, error, needsOnboarding, doAction } = usePlayer({
+    initData,
+  });
 
   useEffect(() => {
     if (!isLoading && initData && needsOnboarding) {
@@ -74,12 +71,8 @@ export function GamePageClient() {
 
   const canAct = player && player.energy >= 1;
 
-  if (initData && isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-muted-foreground">Загрузка...</p>
-      </div>
-    );
+  if (initData && (isLoading || needsOnboarding)) {
+    return <LoadingScreen />;
   }
 
   if (initData && error) {
@@ -99,14 +92,6 @@ export function GamePageClient() {
         <p className="text-center text-muted-foreground">
           Не удалось загрузить профиль. Откройте приложение из Telegram.
         </p>
-      </div>
-    );
-  }
-
-  if (initData && needsOnboarding) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-muted-foreground">Переход к выбору профессии...</p>
       </div>
     );
   }
