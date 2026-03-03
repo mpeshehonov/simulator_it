@@ -84,7 +84,7 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
                     : undefined
               }
             >
-              {loading ? "..." : isMax ? "Макс" : "+1"}
+              {loading ? "..." : isMax ? "Макс" : `+1 · ${SKILL_UPGRADE_EXP_COST} EXP`}
             </Button>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
 import { PlayerProfileCard } from "@/components/game/PlayerProfileCard";
 import { PlayerActionsCard } from "@/components/game/PlayerActionsCard";
+import { EnergyBoostCard } from "@/components/game/EnergyBoostCard";
 import { OnboardingTour } from "@/components/game/OnboardingTour";
 import { useAppStore, isOnboardingTourDone } from "@/store/app";
 
@@ -26,7 +27,7 @@ const MOCK_PLAYER = {
 export function GamePageClient() {
   const router = useRouter();
   const { initData } = useTelegram();
-  const { player, isLoading, error, needsOnboarding, doAction } = usePlayer({
+  const { player, isLoading, error, needsOnboarding, doAction, refresh } = usePlayer({
     initData,
   });
 
@@ -239,6 +240,8 @@ export function GamePageClient() {
             </CardContent>
           </Card>
         )}
+
+        {player && <EnergyBoostCard initData={initData ?? null} onPurchased={refresh} />}
 
         <nav ref={navRef} className="grid gap-4">
           <Link href="/how-to-play">

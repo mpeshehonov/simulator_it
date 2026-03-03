@@ -7,6 +7,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/u
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
+import { ENERGY_PER_ACTION } from "@/lib/game/constants";
 
 interface ChannelItem {
   id: string;
@@ -164,7 +165,7 @@ export default function ChannelsPage() {
                             disabled={!canAct || actionLoading !== null}
                             onClick={() => handleConfirm(ch.id)}
                           >
-                            {actionLoading === ch.id ? "..." : "Подтвердить"}
+                            {actionLoading === ch.id ? "..." : `Подтвердить · ${ENERGY_PER_ACTION} ⚡`}
                           </Button>
                         )}
                       </div>

@@ -8,6 +8,7 @@ import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
 import { PlayerProfileCard } from "@/components/game/PlayerProfileCard";
+import { ENERGY_PER_ACTION } from "@/lib/game/constants";
 
 export default function TasksPage() {
   const router = useRouter();
@@ -89,7 +90,7 @@ export default function TasksPage() {
               disabled={!canAct || !!actionLoading}
               onClick={handleTask}
             >
-              {actionLoading === "task" ? "..." : "Взять задачу"}
+              {actionLoading === "task" ? "..." : `Взять задачу · ${ENERGY_PER_ACTION} ⚡`}
             </Button>
           </CardContent>
         </Card>
@@ -104,7 +105,7 @@ export default function TasksPage() {
           <CardContent>
             <Link href="/channels">
               <Button variant="secondary" size="sm" className="w-full">
-                Перейти к каналам
+                Перейти к каналам · бесплатно
               </Button>
             </Link>
           </CardContent>
@@ -120,7 +121,7 @@ export default function TasksPage() {
           <CardContent>
             <Link href="/fix-bugs">
               <Button variant="secondary" size="sm" className="w-full">
-                Играть
+                Играть · {ENERGY_PER_ACTION} ⚡
               </Button>
             </Link>
           </CardContent>

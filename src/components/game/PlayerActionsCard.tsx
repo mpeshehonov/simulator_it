@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui/pixelact-ui";
+import { ENERGY_PER_ACTION } from "@/lib/game/constants";
 
 interface PlayerActionsCardProps {
   canAct: boolean;
@@ -34,7 +35,7 @@ export function PlayerActionsCard({
           disabled={!canAct || actionLoading !== null}
           onClick={onLearn}
         >
-          {actionLoading === "learn" ? "..." : "📚 Учиться"}
+          {actionLoading === "learn" ? "..." : `📚 Учиться · ${ENERGY_PER_ACTION} ⚡`}
         </Button>
         <Link href="/tasks" className="w-full">
           <Button
@@ -43,7 +44,7 @@ export function PlayerActionsCard({
             className="w-full"
             disabled={!!actionLoading}
           >
-            📋 Задания
+            📋 Задания · 1 ⚡
           </Button>
         </Link>
         <Button
@@ -61,8 +62,8 @@ export function PlayerActionsCard({
           {actionLoading === "rest"
             ? "..."
             : !canRest && restCooldownLeftMin > 0
-              ? `🛌 Отдых (${restCooldownLeftMin} мин)`
-              : "🛌 Отдых"}
+              ? `🛌 Отдых (${restCooldownLeftMin} мин) · 0 ⚡`
+              : "🛌 Отдых · 0 ⚡"}
         </Button>
       </div>
       </CardContent>

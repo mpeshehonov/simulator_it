@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ENERGY_PER_ACTION } from "@/lib/game/constants";
 
 const CANVAS_W = 320;
 const CANVAS_H = 240;
@@ -265,7 +266,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
           disabled={disabled}
           className="touch-manipulation pixel-font min-h-[48px] w-full rounded border-2 border-primary bg-primary/20 px-4 py-4 text-base font-medium text-primary transition-colors active:bg-primary/40 disabled:opacity-50"
         >
-          Начать игру
+          Начать игру · {ENERGY_PER_ACTION} ⚡
         </button>
       </div>
     );
@@ -357,7 +358,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
               onClick={handleRetry}
               className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-primary bg-primary px-4 py-4 text-base text-primary-foreground hover:bg-primary/90 active:bg-primary/90"
             >
-              Повторить попытку
+              Повторить попытку · {ENERGY_PER_ACTION} ⚡
             </button>
             <button
               type="button"
@@ -383,7 +384,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
               onClick={handleRetry}
               className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-border px-4 py-4 text-base active:bg-muted/50"
             >
-              Ещё раз
+              Ещё раз · {ENERGY_PER_ACTION} ⚡
             </button>
           </>
         )}
