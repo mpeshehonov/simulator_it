@@ -1,0 +1,124 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/pixelact-ui";
+import { useTelegram } from "@/hooks/useTelegram";
+import { usePlayer } from "@/hooks/usePlayer";
+import { LoadingScreen } from "@/components/game/LoadingScreen";
+
+export default function TasksPage() {
+  const router = useRouter();
+  const { initData, webApp } = useTelegram();
+  const { player, isLoading, doAction } = usePlayer({ initData });
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoading && initData && !player) {
+      router.replace("/");
+    }
+  }, [isLoading, initData, player, router]);
+
+  useEffect(() => {
+    const back = webApp?.BackButton;
+    if (!back) return;
+    back.show();
+    const handler = () => router.back();
+    back.onClick(handler);
+    return () => {
+      back.offClick(handler);
+      back.hide();
+    };
+  }, [webApp, router]);
+
+  const handleTask = async () => {
+    if (!player || actionLoading) return;
+    setActionLoading("task");
+    try {
+      await doAction("task");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const canAct = player && player.energy >= 1;
+
+  if (!initData) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+        <p className="text-center text-sm text-muted-foreground">Откройте приложение из Telegram.</p>
+        <Link href="/">
+          <Button variant="secondary">На главную</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (isLoading || !player) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
+      <div className="mx-auto max-w-md space-y-6">
+        <header className="py-4 text-center">
+          <h1 className="pixel-font text-xl text-primary">Задания</h1>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Рабочие задачи и доп. активности — всё в одном месте
+          </p>
+        </header>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Рабочая задача</CardTitle>
+            <p className="text-xs text-muted-foreground">Взять задачу: EXP и деньги за одну энергию</p>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="success"
+              size="sm"
+              className="w-full"
+              disabled={!canAct || !!actionLoading}
+              onClick={handleTask}
+            >
+              {actionLoading === "task" ? "..." : "Взять задачу"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Подписка на каналы</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Подпишитесь на партнёрские каналы и получайте EXP за каждый
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Link href="/channels">
+              <Button variant="secondary" size="sm" className="w-full">
+                Перейти к каналам
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Фикс багов</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Мини-игра: скобка против багов, награда по очкам
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Link href="/fix-bugs">
+              <Button variant="secondary" size="sm" className="w-full">
+                Играть
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

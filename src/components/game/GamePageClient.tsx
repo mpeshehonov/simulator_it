@@ -19,7 +19,6 @@ import {
   REST_COOLDOWN_MINUTES,
 } from "@/lib/game/constants";
 import { PROFESSION_NAMES } from "@/lib/game/professions";
-import { ACTION_DEFINITIONS, DEFAULT_ACTION_IDS } from "@/lib/game/actions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
@@ -99,13 +98,6 @@ export function GamePageClient() {
     }
   };
 
-  /** Дополнительные действия (не learn/task/rest) — расширяемый список из реестра. */
-  const extraActions = ACTION_DEFINITIONS.filter(
-    (a) => !DEFAULT_ACTION_IDS.includes(a.id as (typeof DEFAULT_ACTION_IDS)[number])
-  );
-  const [minigameOpen, setMinigameOpen] = useState<string | null>(null);
-  const [minigameScore, setMinigameScore] = useState(0);
-
   const canAct = player && player.energy >= 1;
 
   const restCooldownMs = REST_COOLDOWN_MINUTES * 60 * 1000;
@@ -155,8 +147,11 @@ export function GamePageClient() {
   return (
     <div className="app-safe-top min-h-screen bg-background p-4 pb-8">
       <div className="mx-auto max-w-md space-y-10">
-        <header className="py-4 text-center">
+        <header className="flex flex-col items-center gap-2 py-4">
           <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
+          <Link href="/how-to-play" className="text-xs text-muted-foreground underline">
+            Как играть
+          </Link>
         </header>
 
         {data && (
@@ -238,15 +233,16 @@ export function GamePageClient() {
                   >
                     {actionLoading === "learn" ? "..." : "📚 Учиться"}
                   </Button>
-                  <Button
-                    variant="success"
-                    size="sm"
-                    className="w-full"
-                    disabled={!canAct || actionLoading !== null}
-                    onClick={() => handleAction("task")}
-                  >
-                    {actionLoading === "task" ? "..." : "💻 Задача"}
-                  </Button>
+                  <Link href="/tasks" className="w-full">
+                    <Button
+                      variant="success"
+                      size="sm"
+                      className="w-full"
+                      disabled={!!actionLoading}
+                    >
+                      📋 Задания
+                    </Button>
+                  </Link>
                   <Button
                     variant="secondary"
                     size="sm"
@@ -271,90 +267,6 @@ export function GamePageClient() {
           </Card>
         )}
 
-        {player && extraActions.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Дополнительные действия</CardTitle>
-              <p className="text-xs text-muted-foreground">Расширяемые действия и мини-игры</p>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {extraActions.map((def) =>
-                def.kind === "minigame" ? (
-                  <Button
-                    key={def.id}
-                    variant="secondary"
-                    size="sm"
-                    className="w-full"
-                    disabled={!canAct || actionLoading !== null}
-                    onClick={() => setMinigameOpen(def.id)}
-                  >
-                    🎮 {def.name}
-                  </Button>
-                ) : (
-                  <Button
-                    key={def.id}
-                    variant="secondary"
-                    size="sm"
-                    className="w-full"
-                    disabled={!canAct || actionLoading !== null}
-                    onClick={() => handleAction(def.id)}
-                  >
-                    {actionLoading === def.id ? "..." : def.name}
-                  </Button>
-                )
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {minigameOpen === "fix_bugs" && player && (
-          <Card className="border-primary/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Фикс багов (заглушка)</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Мини-игра «скобка vs баги» будет здесь. Пока можно отправить тестовые очки.
-              </p>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <label className="text-xs">
-                Очки:{" "}
-                <input
-                  type="number"
-                  min={0}
-                  max={999}
-                  value={minigameScore}
-                  onChange={(e) => setMinigameScore(Number(e.target.value) || 0)}
-                  className="w-16 rounded border bg-background px-2 py-1 text-sm"
-                />
-              </label>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="flex-1"
-                  disabled={!canAct || actionLoading !== null}
-                  onClick={async () => {
-                    await handleAction("fix_bugs", { score: minigameScore });
-                    setMinigameOpen(null);
-                    setMinigameScore(0);
-                  }}
-                >
-                  {actionLoading === "fix_bugs" ? "..." : "Завершить и получить награду"}
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    setMinigameOpen(null);
-                    setMinigameScore(0);
-                  }}
-                >
-                  Отмена
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Последнее событие</CardTitle>
@@ -369,6 +281,11 @@ export function GamePageClient() {
         </Card>
 
         <nav className="grid gap-2">
+          <Link href="/how-to-play">
+            <Button variant="secondary" className="w-full">
+              ❓ Как играть
+            </Button>
+          </Link>
           <Link href="/skills">
             <Button variant="secondary" className="w-full">
               📊 Навыки

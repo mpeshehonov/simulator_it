@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { rowToPlayer } from "@/lib/db/player";
 import { executeAction, getActionDefinition, ALL_ACTION_IDS } from "@/lib/game/actions";
 import { applyPassiveEnergyRegen } from "@/lib/game/energy";
+import { getPartnerChannelById } from "@/lib/game/channels";
 
 export async function POST(request: Request) {
   try {
@@ -47,6 +48,33 @@ export async function POST(request: Request) {
     }
     const rowWithRegen = { ...row, energy: regen.energy, energy_updated_at: regen.energyUpdatedAt };
     const player = rowToPlayer(rowWithRegen);
+
+    if (action === "partner_subscribe") {
+      const channelId = typeof payload?.channelId === "string" ? payload.channelId.trim() : "";
+      const channel = channelId ? getPartnerChannelById(channelId) : undefined;
+      if (!channel) {
+        return NextResponse.json(
+          { error: "Укажите канал (channelId) или канал не найден" },
+          { status: 400 }
+        );
+      }
+      const { data: existing } = await supabase
+        .from("player_channel_subscriptions")
+        .select("channel_id")
+        .eq("player_id", row.id)
+        .eq("channel_id", channelId)
+        .maybeSingle();
+      if (existing) {
+        return NextResponse.json(
+          { error: "Вы уже получали награду за подписку на этот канал" },
+          { status: 400 }
+        );
+      }
+      await supabase.from("player_channel_subscriptions").insert({
+        player_id: row.id,
+        channel_id: channelId,
+      });
+    }
 
     let result;
     try {
