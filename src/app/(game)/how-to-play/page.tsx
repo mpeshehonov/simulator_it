@@ -40,8 +40,8 @@ export default function HowToPlayPage() {
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Цель</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="pixel-font text-xs text-muted-foreground">
+          <CardContent className="space-y-3">
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
               Вы — айтишник, который качает уровень, опыт и деньги. Учитесь, берите задачи, отдыхайте
               и проходите собеседования, чтобы подниматься по карьерной лестнице (от Безработного до
               Лида).
@@ -53,13 +53,13 @@ export default function HowToPlayPage() {
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Энергия и действия</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="pixel-font text-xs text-muted-foreground">
+          <CardContent className="space-y-3">
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
               У вас есть энергия. Большинство действий тратят 1 энергию. Учёба даёт EXP, рабочая
               задача — EXP и деньги. Отдых восстанавливает энергию, но его можно использовать не
               чаще раза в 20 минут.
             </p>
-            <p className="pixel-font text-xs text-muted-foreground">
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
               Энергия понемногу восстанавливается со временем сама.
             </p>
           </CardContent>
@@ -69,8 +69,8 @@ export default function HowToPlayPage() {
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Задания</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="pixel-font text-xs text-muted-foreground">
+          <CardContent className="space-y-3">
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
               Кнопка «Задания» ведёт в общий список: рабочая задача, подписка на партнёрские каналы
               (EXP за каждый канал), мини-игра «Фикс багов» и другие активности по мере появления.
             </p>
@@ -81,8 +81,8 @@ export default function HowToPlayPage() {
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Навыки и собеседование</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="pixel-font text-xs text-muted-foreground">
+          <CardContent className="space-y-3">
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
               Тратьте EXP на прокачку навыков профессии — это увеличивает доход и шанс пройти
               собеседование. Когда накопите достаточно EXP, откройте «Собеседование» и попробуйте
               перейти на следующий уровень (Стажёр → Джуниор → … → Лид).
@@ -90,7 +90,7 @@ export default function HowToPlayPage() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-center pt-2">
+        <div className="flex justify-center pt-4">
           <Link href="/">
             <Button variant="default">На главную</Button>
           </Link>

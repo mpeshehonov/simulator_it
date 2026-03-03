@@ -25,8 +25,8 @@ export function PlayerActionsCard({
       <CardHeader className="pb-2">
         <CardTitle className="pixel-font text-sm">Действия</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        <div className="flex w-full flex-col gap-2 sm:grid sm:grid-cols-3">
+      <CardContent className="flex flex-col gap-3">
+        <div className="flex w-full flex-col gap-3 sm:grid sm:grid-cols-3">
         <Button
           variant="default"
           size="sm"

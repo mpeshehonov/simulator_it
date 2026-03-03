@@ -113,7 +113,7 @@ export default function ProfessionPage() {
               Смена профессии сбросит все навыки до нуля
             </p>
           </CardHeader>
-          <CardContent className="space-y-2 overflow-hidden">
+          <CardContent className="space-y-3 overflow-hidden">
             {PROFESSIONS.map((id) => (
               <button
                 key={id}
@@ -147,7 +147,7 @@ export default function ProfessionPage() {
 
         {error && <p className="text-center text-sm text-destructive">{error}</p>}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-3 pt-4">
           <Link href="/" className="flex-1">
             <Button variant="secondary" className="w-full" disabled={submitting}>
               Отмена

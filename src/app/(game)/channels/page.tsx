@@ -107,7 +107,7 @@ export default function ChannelsPage() {
       <div className="mx-auto max-w-md space-y-8">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Подписка на каналы</h1>
-          <p className="mt-1 pixel-font text-xs text-muted-foreground">
+          <p className="mt-2 pixel-font text-xs text-muted-foreground leading-relaxed">
             Подпишитесь на канал по ссылке, затем нажмите «Подтвердить». За каждый канал тратится 1
             энергия, награда — EXP (указан у канала).
           </p>
@@ -133,15 +133,15 @@ export default function ChannelsPage() {
                   return (
                     <div
                       key={ch.id}
-                      className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-3"
+                      className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-4"
                     >
                       <div>
                         <p className="pixel-font text-sm font-medium">{ch.name}</p>
-                        <p className="pixel-font text-[10px] text-muted-foreground">
+                        <p className="mt-0.5 pixel-font text-[10px] text-muted-foreground">
                           +{ch.expReward} EXP
                         </p>
                       </div>
-                      <div className="flex w-full flex-col gap-2">
+                      <div className="flex w-full flex-col gap-3">
                         <a
                           href={ch.url}
                           target="_blank"

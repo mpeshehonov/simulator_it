@@ -38,7 +38,7 @@ export function PlayerProfileCard({ data, lastDeltas }: PlayerProfileCardProps) 
         </Badge>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="grid grid-cols-2 gap-2 text-sm">
+        <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center gap-2 rounded bg-muted/50 px-3 py-2">
             <span className="text-lg">⚡</span>
             <div>

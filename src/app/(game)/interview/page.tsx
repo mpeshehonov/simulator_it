@@ -169,7 +169,7 @@ export default function InterviewPage() {
               <CardTitle className="pixel-font text-sm">Пока рано</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="pixel-font text-xs text-muted-foreground">
+              <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
                 Для следующего уровня нужно {meta.requiredExp} EXP, сейчас у тебя {meta.currentExp} EXP.
               </p>
               <Link href="/tasks" className="block w-full">
@@ -187,7 +187,7 @@ export default function InterviewPage() {
               <CardTitle className="pixel-font text-sm">Кулдаун собеседования</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="pixel-font text-xs text-muted-foreground">
+              <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
                 Ты недавно уже проходил собеседование. Попробуй снова через{" "}
                 {formatCooldown(cooldownLeftMs)}.
               </p>
@@ -206,7 +206,7 @@ export default function InterviewPage() {
               <CardTitle className="pixel-font text-sm">Максимальный уровень</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="pixel-font text-xs text-muted-foreground">
+              <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
                 Ты уже Лид. Дальнейшее развитие — за пределами MVP :)
               </p>
               <Link href="/" className="block w-full">
@@ -224,21 +224,21 @@ export default function InterviewPage() {
               <CardTitle className="pixel-font text-sm">Попытка собеседования</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <p className="pixel-font text-xs text-muted-foreground">
+              <div className="space-y-2">
+                <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
                   Шанс успеха (плюс‑минус): {chancePercent ?? 0}%
                 </p>
                 <p className="pixel-font text-[10px] text-muted-foreground">
                   EXP: {meta.currentExp} / {meta.requiredExp}
                 </p>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <p className="pixel-font text-[10px] font-medium text-muted-foreground">
                   Примеры вопросов:
                 </p>
-                <ul className="space-y-1">
+                <ul className="space-y-2">
                   {meta.questions.map((q) => (
-                    <li key={q.id} className="pixel-font text-[10px] text-muted-foreground">
+                    <li key={q.id} className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
                       • {q.text}
                     </li>
                   ))}
@@ -255,7 +255,7 @@ export default function InterviewPage() {
               </Button>
 
               {result && (
-                <p className="pixel-font text-xs text-muted-foreground">
+                <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
                   {result.success
                     ? "Удача! Твой уровень мог повыситься — посмотри на главном экране."
                     : "Не повезло. Репутация немного просела, попробуй позже ещё раз."}

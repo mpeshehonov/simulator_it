@@ -77,8 +77,8 @@ export default function TasksPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Рабочая задача</CardTitle>
-            <p className="pixel-font text-xs text-muted-foreground">
-              Взять задачу: EXP и деньги за одну энергию
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
+              Взять задачу: EXP и деньги за одну энергию.
             </p>
           </CardHeader>
           <CardContent>
@@ -97,8 +97,8 @@ export default function TasksPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Подписка на каналы</CardTitle>
-            <p className="pixel-font text-xs text-muted-foreground">
-              Подпишитесь на партнёрские каналы и получайте EXP за каждый
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
+              Подпишитесь на партнёрские каналы и получайте EXP за каждый канал.
             </p>
           </CardHeader>
           <CardContent>
@@ -113,8 +113,8 @@ export default function TasksPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Фикс багов</CardTitle>
-            <p className="pixel-font text-xs text-muted-foreground">
-              Мини-игра: скобка против багов, награда по очкам
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
+              Мини-игра: скобка против багов, награда по очкам.
             </p>
           </CardHeader>
           <CardContent>

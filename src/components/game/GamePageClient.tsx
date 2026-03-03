@@ -154,12 +154,19 @@ export function GamePageClient() {
           <CardHeader>
             <CardTitle className="pixel-font text-sm">Последнее событие</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="pixel-font text-sm text-muted-foreground">
-              {displayLastEvent
-                ? `${displayLastEvent.title} — ${displayLastEvent.description}`
-                : "—"}
-            </p>
+          <CardContent className="space-y-1">
+            {displayLastEvent ? (
+              <>
+                <p className="pixel-font text-sm font-medium text-foreground leading-relaxed">
+                  {displayLastEvent.title}
+                </p>
+                <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
+                  {displayLastEvent.description}
+                </p>
+              </>
+            ) : (
+              <p className="pixel-font text-sm text-muted-foreground">—</p>
+            )}
           </CardContent>
         </Card>
 
@@ -168,8 +175,8 @@ export function GamePageClient() {
             <CardHeader className="pb-2">
               <CardTitle className="pixel-font text-sm">Путь к собеседованию</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <p className="pixel-font text-[10px] text-muted-foreground">
+            <CardContent className="space-y-3">
+              <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
                 EXP: {data.exp} / {expForInterview}
               </p>
               <div className="h-2 w-full overflow-hidden rounded bg-muted">
@@ -184,7 +191,7 @@ export function GamePageClient() {
           </Card>
         )}
 
-        <nav className="grid gap-3">
+        <nav className="grid gap-4">
           <Link href="/how-to-play">
             <Button variant="secondary" className="w-full">
               ❓ Как играть

@@ -48,7 +48,7 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
             {Icon ? <Icon className="h-6 w-6" strokeWidth={2} /> : null}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium leading-tight text-foreground break-words">
+            <p className="text-sm font-medium leading-tight text-foreground wrap-break-word">
               {branch.name}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
@@ -194,7 +194,7 @@ export default function SkillsPage() {
         </div>
 
         <Card className="overflow-hidden">
-          <CardContent className="space-y-2 py-4">
+          <CardContent className="space-y-3 py-4">
             <p className="pixel-font text-[10px] font-medium text-muted-foreground">
               Как работают навыки
             </p>

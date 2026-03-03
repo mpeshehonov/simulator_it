@@ -85,12 +85,12 @@ export default function FixBugsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {gameCompleted ? (
-              <div className="space-y-3">
-                <p className="pixel-font text-sm text-muted-foreground">
+              <div className="space-y-4">
+                <p className="pixel-font text-sm text-muted-foreground leading-relaxed">
                   Награда начислена. Можешь сыграть ещё раз (тратится энергия) или вернуться к
                   заданиям.
                 </p>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <Link href="/tasks" className="flex-1">
                     <Button variant="default" size="sm" className="w-full">
                       К заданиям

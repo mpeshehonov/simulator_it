@@ -102,7 +102,7 @@ export default function OnboardingPage() {
               От профессии зависят события и ветки навыков
             </p>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-3">
             {PROFESSIONS.map((id) => (
               <button
                 key={id}
