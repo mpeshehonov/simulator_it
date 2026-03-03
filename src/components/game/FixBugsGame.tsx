@@ -42,6 +42,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState>("start");
   const [score, setScore] = useState(0);
+  const scoreRef = useRef(0);
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const rafRef = useRef<number>(0);
   const runningRef = useRef(false);
@@ -54,6 +55,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
   const startGame = useCallback(() => {
     setGameState("playing");
     setScore(0);
+    scoreRef.current = 0;
     setGameResult(null);
   }, []);
 
@@ -153,6 +155,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
           ) {
             bug.alive = false;
             bullet.y = -100;
+            scoreRef.current += SCORE_PER_BUG;
             setScore((s) => s + SCORE_PER_BUG);
             aliveCount--;
           }
@@ -211,7 +214,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
       c.fillStyle = "#94a3b8";
       c.font = "12px monospace";
       c.textAlign = "left";
-      c.fillText(`Очки: ${score}`, 8, 16);
+      c.fillText(`Очки: ${scoreRef.current}`, 8, 16);
 
       rafRef.current = requestAnimationFrame(gameLoop);
     }
@@ -244,7 +247,10 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
 
   if (gameState === "start") {
     return (
-      <div className="flex flex-col items-center gap-6">
+      <div
+        className="flex flex-col items-center gap-6 select-none"
+        style={{ WebkitUserSelect: "none", userSelect: "none" }}
+      >
         <p className="pixel-font text-center text-xs text-muted-foreground">
           Управление: кнопки влево / стрелять / вправо под полем. Уничтожь багов, не дай им дойти до
           низа.
@@ -263,7 +269,10 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
 
   if (gameState === "playing") {
     return (
-      <div className="flex flex-col items-center gap-5" style={{ touchAction: "manipulation" }}>
+      <div
+        className="flex flex-col items-center gap-5 select-none"
+        style={{ touchAction: "manipulation", WebkitUserSelect: "none", userSelect: "none" }}
+      >
         <canvas
           ref={canvasRef}
           width={CANVAS_W}
@@ -329,7 +338,10 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div
+      className="flex flex-col items-center gap-6 select-none"
+      style={{ WebkitUserSelect: "none", userSelect: "none" }}
+    >
       <p className="pixel-font text-center text-sm">
         {gameResult === "won" ? "Победа! Очки:" : "Проиграли. Очки:"} <strong>{score}</strong>
       </p>

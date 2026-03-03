@@ -67,7 +67,10 @@ export default function FixBugsPage() {
   }
 
   return (
-    <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
+    <div
+      className="app-safe-top min-h-screen bg-background px-4 pb-8 select-none"
+      style={{ WebkitUserSelect: "none", userSelect: "none" }}
+    >
       <div className="mx-auto max-w-md space-y-8">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Фикс багов</h1>
