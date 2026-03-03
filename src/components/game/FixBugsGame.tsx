@@ -13,10 +13,10 @@ const BULLET_H = 12;
 const BUG_W = 20;
 const BUG_H = 20;
 const BUG_ROWS = 3;
-const BUG_COLS = 6;
-const BUG_SPEED_X = 0.5;
-const BUG_SPEED_Y = 1;
-const BUG_DROP_FRAMES = 220;
+const BUG_COLS = 4;
+const BUG_SPEED_X = 0.2;
+const BUG_SPEED_Y = 0.5;
+const BUG_DROP_FRAMES = 380;
 const SCORE_PER_BUG = 10;
 
 type GameState = "start" | "playing" | "end";
