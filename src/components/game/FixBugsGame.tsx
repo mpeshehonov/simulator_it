@@ -14,12 +14,13 @@ const BUG_W = 20;
 const BUG_H = 20;
 const BUG_ROWS = 3;
 const BUG_COLS = 6;
-const BUG_SPEED_X = 1;
-const BUG_SPEED_Y = 2;
-const BUG_DROP_FRAMES = 120;
+const BUG_SPEED_X = 0.5;
+const BUG_SPEED_Y = 1;
+const BUG_DROP_FRAMES = 220;
 const SCORE_PER_BUG = 10;
 
 type GameState = "start" | "playing" | "end";
+type GameResult = "won" | "lost";
 
 interface Bullet {
   x: number;
@@ -41,6 +42,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState>("start");
   const [score, setScore] = useState(0);
+  const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const rafRef = useRef<number>(0);
   const runningRef = useRef(false);
   const keysRef = useRef<{ left: boolean; right: boolean; fire: boolean }>({
@@ -52,6 +54,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
   const startGame = useCallback(() => {
     setGameState("playing");
     setScore(0);
+    setGameResult(null);
   }, []);
 
   useEffect(() => {
@@ -159,16 +162,18 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
         if (bullets[i].y < -50) bullets.splice(i, 1);
       }
 
-      // Game over: bug reached bottom
+      // Game over: bug reached bottom (проигрыш)
       for (const b of bugs) {
         if (b.alive && b.y + BUG_H >= playerY) {
           runningRef.current = false;
+          setGameResult("lost");
           setGameState("end");
           return;
         }
       }
       if (aliveCount <= 0) {
         runningRef.current = false;
+        setGameResult("won");
         setGameState("end");
         return;
       }
@@ -190,10 +195,18 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
         c.fillText("🐛", b.x + BUG_W / 2, b.y + BUG_H - 4);
       }
 
+      // Скобка } повёрнута на 90° — остриём вверх, будто из неё вылетают лучи
+      const cx = playerX + PLAYER_W / 2;
+      const cy = playerY + PLAYER_H / 2;
+      c.save();
+      c.translate(cx, cy);
+      c.rotate(-Math.PI / 2);
       c.fillStyle = "#e2e8f0";
       c.font = "20px monospace";
       c.textAlign = "center";
-      c.fillText("}", playerX + PLAYER_W / 2, playerY + PLAYER_H - 4);
+      c.textBaseline = "middle";
+      c.fillText("}", 0, 0);
+      c.restore();
 
       c.fillStyle = "#94a3b8";
       c.font = "12px monospace";
@@ -309,30 +322,55 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
     );
   }
 
+  const handleRetry = () => {
+    setGameState("start");
+    setScore(0);
+    setGameResult(null);
+  };
+
   return (
     <div className="flex flex-col items-center gap-6">
       <p className="pixel-font text-center text-sm">
-        Игра окончена. Очки: <strong>{score}</strong>
+        {gameResult === "won" ? "Победа! Очки:" : "Проиграли. Очки:"} <strong>{score}</strong>
       </p>
       <div className="flex w-full flex-col gap-4">
-        <button
-          type="button"
-          onClick={() => onComplete(score)}
-          disabled={disabled}
-          className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-primary bg-primary px-4 py-4 text-base text-primary-foreground hover:bg-primary/90 active:bg-primary/90 disabled:opacity-50"
-        >
-          Завершить и получить награду
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setGameState("start");
-            setScore(0);
-          }}
-          className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-border px-4 py-4 text-base active:bg-muted/50"
-        >
-          Ещё раз
-        </button>
+        {gameResult === "lost" ? (
+          <>
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-primary bg-primary px-4 py-4 text-base text-primary-foreground hover:bg-primary/90 active:bg-primary/90"
+            >
+              Повторить попытку
+            </button>
+            <button
+              type="button"
+              onClick={() => onComplete(score)}
+              disabled={disabled}
+              className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-border px-4 py-4 text-base active:bg-muted/50 disabled:opacity-50"
+            >
+              Завершить с текущими очками
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => onComplete(score)}
+              disabled={disabled}
+              className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-primary bg-primary px-4 py-4 text-base text-primary-foreground hover:bg-primary/90 active:bg-primary/90 disabled:opacity-50"
+            >
+              Завершить и получить награду
+            </button>
+            <button
+              type="button"
+              onClick={handleRetry}
+              className="touch-manipulation pixel-font min-h-[48px] w-full rounded-xl border-2 border-border px-4 py-4 text-base active:bg-muted/50"
+            >
+              Ещё раз
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
