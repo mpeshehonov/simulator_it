@@ -11,6 +11,7 @@ import { LoadingScreen } from "@/components/game/LoadingScreen";
 interface InterviewQuestionDto {
   id: string;
   text: string;
+  hint?: string;
 }
 
 interface InterviewMeta {
