@@ -3,6 +3,7 @@ import { getTelegramIdFromRequest } from "@/lib/telegram/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { rowToPlayer } from "@/lib/db/player";
 import { executeLearn, executeTask, executeRest } from "@/lib/game/action";
+import { applyPassiveEnergyRegen } from "@/lib/game/energy";
 import type { ActionType } from "@/types/game";
 
 export async function POST(request: Request) {
@@ -30,7 +31,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Player not found" }, { status: 404 });
     }
 
-    const player = rowToPlayer(row);
+    const regen = applyPassiveEnergyRegen(row.energy, row.energy_updated_at);
+    if (regen.energy !== row.energy) {
+      await supabase
+        .from("players")
+        .update({
+          energy: regen.energy,
+          energy_updated_at: regen.energyUpdatedAt,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("telegram_id", telegramId);
+    }
+    const rowWithRegen = { ...row, energy: regen.energy, energy_updated_at: regen.energyUpdatedAt };
+    const player = rowToPlayer(rowWithRegen);
 
     let result;
     try {

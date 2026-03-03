@@ -4,6 +4,7 @@ import { getPlayerCookieHeader } from "@/lib/telegram/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { rowToPlayer } from "@/lib/db/player";
 import { type ProfessionId, PROFESSION_SKILL_BRANCHES } from "@/lib/game/professions";
+import { applyPassiveEnergyRegen } from "@/lib/game/energy";
 
 export async function POST(request: Request) {
   try {
@@ -48,9 +49,25 @@ export async function POST(request: Request) {
       .single();
 
     if (existing) {
+      const regen = applyPassiveEnergyRegen(existing.energy, existing.energy_updated_at);
+      if (regen.energy !== existing.energy) {
+        await supabase
+          .from("players")
+          .update({
+            energy: regen.energy,
+            energy_updated_at: regen.energyUpdatedAt,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("telegram_id", user.id);
+      }
+      const playerRow = {
+        ...existing,
+        energy: regen.energy,
+        energy_updated_at: regen.energyUpdatedAt,
+      };
       const response = NextResponse.json({
         ok: true,
-        player: rowToPlayer(existing),
+        player: rowToPlayer(playerRow),
       });
       response.headers.set("Set-Cookie", getPlayerCookieHeader(user.id));
       return response;

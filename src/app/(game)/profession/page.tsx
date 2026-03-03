@@ -91,7 +91,7 @@ export default function ProfessionPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto max-w-md space-y-8">
         <header className="flex items-center justify-between py-4">
           {!initData ? (
             <Link href="/">
@@ -147,7 +147,7 @@ export default function ProfessionPage() {
 
         {error && <p className="text-center text-sm text-destructive">{error}</p>}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-2">
           <Link href="/" className="flex-1">
             <Button variant="secondary" className="w-full" disabled={submitting}>
               Отмена

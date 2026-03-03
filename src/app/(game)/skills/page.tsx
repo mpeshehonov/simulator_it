@@ -10,6 +10,7 @@ import {
   PROFESSION_ICONS,
 } from "@/lib/game/professions";
 import { SKILL_UPGRADE_EXP_COST } from "@/lib/game/constants";
+import { SKILL_BRANCH_ICONS } from "@/lib/game/skill-icons";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
@@ -27,6 +28,7 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
   const [loading, setLoading] = useState(false);
   const canUpgrade = currentLevel < branch.maxLevel && playerExp >= SKILL_UPGRADE_EXP_COST;
   const isMax = currentLevel >= branch.maxLevel;
+  const Icon = SKILL_BRANCH_ICONS[branch.id];
 
   const handleUpgrade = async () => {
     if (!canUpgrade || loading) return;
@@ -40,24 +42,27 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
 
   return (
     <Card className="overflow-hidden">
-      <CardContent className="p-3 sm:p-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <CardContent className="p-4">
+        <div className="flex gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {Icon ? <Icon className="h-6 w-6" strokeWidth={2} /> : null}
+          </div>
           <div className="min-w-0 flex-1">
-            <p className="pixel-font text-xs font-medium leading-tight break-words sm:text-[10px]">
+            <p className="text-sm font-medium leading-tight text-foreground break-words">
               {branch.name}
             </p>
-            <p className="mt-0.5 pixel-font text-[10px] text-muted-foreground">
-              Ур. {currentLevel}/{branch.maxLevel}
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Уровень {currentLevel} из {branch.maxLevel}
             </p>
             {branch.description && (
-              <p className="mt-1 text-[10px] text-muted-foreground leading-snug">
+              <p className="mt-1.5 text-xs text-muted-foreground leading-snug">
                 {branch.description}
               </p>
             )}
           </div>
-          <div className="flex shrink-0 items-center gap-2 self-end sm:self-center">
+          <div className="flex shrink-0 flex-col items-end justify-center gap-1">
             {!isMax && (
-              <span className="pixel-font text-[10px] text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground">
                 {SKILL_UPGRADE_EXP_COST} EXP
               </span>
             )}
@@ -139,8 +144,8 @@ export default function SkillsPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
-        <header className="flex items-center justify-between py-4">
+      <div className="mx-auto max-w-md space-y-8">
+        <header className="grid grid-cols-3 items-center py-5">
           {!initData ? (
             <Link href="/">
               <Button variant="secondary" size="sm">
@@ -150,8 +155,8 @@ export default function SkillsPage() {
           ) : (
             <div />
           )}
-          <h1 className="pixel-font text-lg text-primary">Навыки</h1>
-          <div className="w-16" />
+          <h1 className="pixel-font text-center text-lg text-primary">Навыки</h1>
+          <div />
         </header>
 
         <Card>
@@ -172,10 +177,10 @@ export default function SkillsPage() {
         </Card>
 
         <div>
-          <h2 className="mb-2 pixel-font text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+          <h2 className="mb-4 pixel-font text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
             Ветки навыков
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {branches.map((branch) => (
               <SkillCard
                 key={branch.id}

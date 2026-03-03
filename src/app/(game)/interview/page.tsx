@@ -23,7 +23,7 @@ export default function InterviewPage() {
   }, [webApp, router]);
 
   return (
-    <div className="app-safe-top flex min-h-screen flex-col px-4 pb-8">
+    <div className="app-safe-top flex min-h-screen flex-col gap-8 px-4 pb-8 pt-2">
       <header className="flex items-center justify-between py-4">
         {!initData ? (
           <Link href="/">
