@@ -51,7 +51,9 @@ export default function FixBugsPage() {
   if (!initData) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-        <p className="text-center text-sm text-muted-foreground">Откройте приложение из Telegram.</p>
+        <p className="text-center pixel-font text-sm text-muted-foreground">
+          Откройте приложение из Telegram.
+        </p>
         <Link href="/">
           <Button variant="secondary">На главную</Button>
         </Link>
@@ -65,20 +67,20 @@ export default function FixBugsPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto max-w-md space-y-8">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Фикс багов</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 pixel-font text-xs text-muted-foreground">
             Мини-игра «скобка vs баги» — скоро здесь. Пока можно отправить тестовые очки.
           </p>
         </header>
 
         <Card className="border-primary/50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Заглушка</CardTitle>
+            <CardTitle className="pixel-font text-sm">Заглушка</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <label className="block text-xs">
+            <label className="block pixel-font text-xs">
               Очки:{" "}
               <input
                 type="number"

@@ -104,41 +104,44 @@ export default function ChannelsPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto max-w-md space-y-8">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Подписка на каналы</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Подпишитесь на канал, затем нажмите «Подтвердить» — получите EXP (1 энергия за канал)
+          <p className="mt-1 pixel-font text-xs text-muted-foreground">
+            Подпишитесь на канал по ссылке, затем нажмите «Подтвердить». За каждый канал тратится 1
+            энергия, награда — EXP (указан у канала).
           </p>
         </header>
 
         {error && (
-          <p className="text-center text-xs text-destructive">{error}</p>
+          <p className="text-center pixel-font text-xs text-destructive">{error}</p>
         )}
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Партнёрские каналы</CardTitle>
+            <CardTitle className="pixel-font text-sm">Партнёрские каналы</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="flex flex-col gap-4">
             {loadingChannels ? (
-              <p className="text-xs text-muted-foreground">Загрузка…</p>
+              <p className="pixel-font text-xs text-muted-foreground">Загрузка…</p>
             ) : sortedChannels.length === 0 ? (
-              <p className="text-xs text-muted-foreground">Пока нет каналов.</p>
+              <p className="pixel-font text-xs text-muted-foreground">Пока нет каналов.</p>
             ) : (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-4">
                 {sortedChannels.map((ch) => {
                   const completed = completedIds.includes(ch.id);
                   return (
                     <div
                       key={ch.id}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/30 p-3"
+                      className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-3"
                     >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium">{ch.name}</p>
-                        <p className="text-[10px] text-muted-foreground">+{ch.expReward} EXP</p>
+                      <div>
+                        <p className="pixel-font text-sm font-medium">{ch.name}</p>
+                        <p className="pixel-font text-[10px] text-muted-foreground">
+                          +{ch.expReward} EXP
+                        </p>
                       </div>
-                      <div className="flex shrink-0 gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <a
                           href={ch.url}
                           target="_blank"
@@ -150,7 +153,9 @@ export default function ChannelsPage() {
                           </Button>
                         </a>
                         {completed ? (
-                          <span className="text-[10px] text-muted-foreground">✓ получено</span>
+                          <span className="pixel-font text-[10px] text-muted-foreground">
+                            ✓ получено
+                          </span>
                         ) : (
                           <Button
                             variant="default"
@@ -170,9 +175,11 @@ export default function ChannelsPage() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-center">
-          <Link href="/tasks">
-            <Button variant="secondary">← К заданиям</Button>
+        <div className="mt-2 w-full">
+          <Link href="/tasks" className="block w-full">
+            <Button variant="secondary" className="w-full">
+              ← К заданиям
+            </Button>
           </Link>
         </div>
       </div>

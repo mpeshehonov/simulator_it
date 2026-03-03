@@ -126,7 +126,7 @@ export function GamePageClient() {
   if (initData && error) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-        <p className="text-destructive">{error}</p>
+        <p className="pixel-font text-destructive">{error}</p>
         <Button variant="secondary" onClick={() => window.location.reload()}>
           Обновить
         </Button>
@@ -137,7 +137,7 @@ export function GamePageClient() {
   if (initData && !player && !needsOnboarding) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
-        <p className="text-center text-muted-foreground">
+        <p className="text-center pixel-font text-muted-foreground">
           Не удалось загрузить профиль. Откройте приложение из Telegram.
         </p>
       </div>
@@ -146,12 +146,9 @@ export function GamePageClient() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background p-4 pb-8">
-      <div className="mx-auto max-w-md space-y-10">
-        <header className="flex flex-col items-center gap-2 py-4">
+      <div className="mx-auto max-w-md space-y-8">
+        <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
-          <Link href="/how-to-play" className="text-xs text-muted-foreground underline">
-            Как играть
-          </Link>
         </header>
 
         {data && (
@@ -159,7 +156,7 @@ export function GamePageClient() {
             <CardHeader className="flex flex-row items-center justify-between gap-2">
               <div>
                 <CardTitle className="text-base">{levelInfo?.name ?? "Безработный"}</CardTitle>
-                <p className="mt-0.5 text-xs text-muted-foreground">{professionName}</p>
+                <p className="mt-0.5 pixel-font text-xs text-muted-foreground">{professionName}</p>
               </div>
               <Badge variant="default" className="text-[10px]">
                 Lv.{data.level}
@@ -179,7 +176,7 @@ export function GamePageClient() {
                         countDuration={350}
                       />
                     </p>
-                    <p className="text-[10px] text-muted-foreground">Энергия</p>
+                    <p className="pixel-font text-[10px] text-muted-foreground">Энергия</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 rounded bg-muted/50 px-3 py-2">
@@ -193,7 +190,7 @@ export function GamePageClient() {
                         countDuration={350}
                       />
                     </p>
-                    <p className="text-[10px] text-muted-foreground">Деньги</p>
+                    <p className="pixel-font text-[10px] text-muted-foreground">Деньги</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 rounded bg-muted/50 px-3 py-2">
@@ -207,14 +204,14 @@ export function GamePageClient() {
                         countDuration={350}
                       />
                     </p>
-                    <p className="text-[10px] text-muted-foreground">Опыт</p>
+                    <p className="pixel-font text-[10px] text-muted-foreground">Опыт</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 rounded bg-muted/50 px-3 py-2">
                   <span className="text-lg">⭐</span>
                   <div>
                     <p className="font-medium">{data.reputation}</p>
-                    <p className="text-[10px] text-muted-foreground">Репутация</p>
+                    <p className="pixel-font text-[10px] text-muted-foreground">Репутация</p>
                   </div>
                 </div>
               </div>
@@ -222,7 +219,9 @@ export function GamePageClient() {
 
             {player && (
               <CardFooter className="flex flex-col gap-2">
-                <p className="w-full text-center text-[10px] text-muted-foreground">Действия</p>
+                <p className="w-full text-center pixel-font text-[10px] text-muted-foreground">
+                  Действия
+                </p>
                 <div className="flex w-full flex-col gap-2 sm:grid sm:grid-cols-3">
                   <Button
                     variant="default"
@@ -269,10 +268,10 @@ export function GamePageClient() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Последнее событие</CardTitle>
+            <CardTitle className="pixel-font text-sm">Последнее событие</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className="pixel-font text-sm text-muted-foreground">
               {displayLastEvent
                 ? `${displayLastEvent.title} — ${displayLastEvent.description}`
                 : "—"}
@@ -313,7 +312,7 @@ export function GamePageClient() {
         </nav>
 
         {!initData && (
-          <p className="text-center text-[10px] text-muted-foreground">
+          <p className="text-center pixel-font text-[10px] text-muted-foreground">
             Режим превью (откройте в Telegram для полного функционала)
           </p>
         )}
