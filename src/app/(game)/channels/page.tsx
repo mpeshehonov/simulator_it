@@ -141,25 +141,26 @@ export default function ChannelsPage() {
                           +{ch.expReward} EXP
                         </p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex w-full flex-col gap-2">
                         <a
                           href={ch.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-block"
+                          className="block w-full"
                         >
-                          <Button variant="secondary" size="sm">
+                          <Button variant="secondary" size="sm" className="w-full">
                             Перейти
                           </Button>
                         </a>
                         {completed ? (
-                          <span className="pixel-font text-[10px] text-muted-foreground">
-                            ✓ получено
-                          </span>
+                          <Button variant="secondary" size="sm" className="w-full" disabled>
+                            ✓ Получено
+                          </Button>
                         ) : (
                           <Button
                             variant="default"
                             size="sm"
+                            className="w-full"
                             disabled={!canAct || actionLoading !== null}
                             onClick={() => handleConfirm(ch.id)}
                           >
@@ -175,7 +176,7 @@ export default function ChannelsPage() {
           </CardContent>
         </Card>
 
-        <div className="mt-2 w-full">
+        <div className="w-full">
           <Link href="/tasks" className="block w-full">
             <Button variant="secondary" className="w-full">
               ← К заданиям
