@@ -86,7 +86,11 @@ export async function POST(request: Request) {
 
     const lastEventJson =
       result.event != null
-        ? { title: result.event.title, description: result.event.description }
+        ? {
+            title: result.event.title,
+            description: result.event.description,
+            ...(result.event.hint ? { hint: result.event.hint } : {}),
+          }
         : null;
 
     const updatePayload: Record<string, unknown> = {

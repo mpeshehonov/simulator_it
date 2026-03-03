@@ -10,6 +10,7 @@ import {
   PROFESSION_ICONS,
 } from "@/lib/game/professions";
 import { SKILL_UPGRADE_EXP_COST } from "@/lib/game/constants";
+import { INCOME_SKILL_MULTIPLIER, INTERVIEW_SKILL_BONUS } from "@/lib/game/skills";
 import { SKILL_BRANCH_ICONS } from "@/lib/game/skill-icons";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
@@ -59,6 +60,10 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
                 {branch.description}
               </p>
             )}
+            <p className="mt-1 text-[10px] text-primary">
+              За уровень: +{Math.round(INCOME_SKILL_MULTIPLIER * 100)}% к доходу, +
+              {Math.round(INTERVIEW_SKILL_BONUS * 100)}% к шансу собеседования
+            </p>
           </div>
           <div className="flex shrink-0 flex-col items-end justify-center gap-1">
             {!isMax && (
@@ -141,6 +146,9 @@ export default function SkillsPage() {
   const profession = player.profession as keyof typeof PROFESSION_SKILL_BRANCHES;
   const branches = PROFESSION_SKILL_BRANCHES[profession] ?? [];
   const skills = player.skills ?? {};
+  const totalSkillLevels = Object.values(skills).reduce((a, b) => a + b, 0);
+  const incomeBonusPercent = Math.round(totalSkillLevels * INCOME_SKILL_MULTIPLIER * 100);
+  const interviewBonusPercent = Math.round(totalSkillLevels * INTERVIEW_SKILL_BONUS * 100);
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
@@ -176,6 +184,25 @@ export default function SkillsPage() {
           </CardContent>
         </Card>
 
+        <Card className="border-primary/30">
+          <CardContent className="space-y-2 py-4">
+            <p className="pixel-font text-[10px] font-medium text-primary uppercase tracking-wide">
+              Твои бонусы от навыков
+            </p>
+            <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
+              Сумма уровней по всем веткам: <strong className="text-foreground">{totalSkillLevels}</strong>
+            </p>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <span className="rounded bg-primary/10 px-2 py-1 pixel-font text-[10px] text-primary">
+                Доход с задач: +{incomeBonusPercent}%
+              </span>
+              <span className="rounded bg-primary/10 px-2 py-1 pixel-font text-[10px] text-primary">
+                Шанс собеседования: +{interviewBonusPercent}%
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
         <div>
           <h2 className="mb-4 pixel-font text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
             Ветки навыков
@@ -199,9 +226,9 @@ export default function SkillsPage() {
               Как работают навыки
             </p>
             <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-              Один уровень = {SKILL_UPGRADE_EXP_COST} EXP. Чем выше сумма уровней по всем веткам —
-              тем больше доход с задач и шанс пройти собеседование. При смене профессии ветки
-              навыков обнуляются под новую профессию.
+              Один уровень = {SKILL_UPGRADE_EXP_COST} EXP. Каждый уровень даёт +5% к доходу с задач и
+              +2% к шансу пройти собеседование (суммируются по всем веткам). При смене профессии
+              ветки навыков обнуляются.
             </p>
           </CardContent>
         </Card>

@@ -1,6 +1,8 @@
 export interface LastEvent {
   title: string;
   description: string;
+  /** Краткая подсказка/объяснение события для обучения */
+  hint?: string;
 }
 
 export interface Player {

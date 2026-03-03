@@ -16,6 +16,8 @@ export interface GameEvent {
   minLevel?: number;
   title: string;
   description: string;
+  /** Краткое объяснение для обучения (что это за явление в реальной работе) */
+  hint?: string;
   tone: EventTone;
   effects: EventEffect[];
 }
@@ -32,6 +34,8 @@ export interface InterviewQuestion {
   id: string;
   text: string;
   profession: string;
+  /** Краткий ответ/подсказка для обучения */
+  hint?: string;
 }
 
 /** Событие отдыха: даёт разное кол-во энергии */

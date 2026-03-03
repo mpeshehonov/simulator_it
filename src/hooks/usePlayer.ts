@@ -11,7 +11,7 @@ interface UsePlayerOptions {
 /** Результат выполнения действия (простое или мини-игра). */
 export interface DoActionResult {
   ok: boolean;
-  event?: { title: string; description: string; tone: string };
+  event?: { title: string; description: string; tone: string; hint?: string };
   expGained?: number;
   moneyGained?: number;
 }

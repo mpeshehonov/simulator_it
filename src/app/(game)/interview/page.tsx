@@ -238,8 +238,15 @@ export default function InterviewPage() {
                 </p>
                 <ul className="space-y-2">
                   {meta.questions.map((q) => (
-                    <li key={q.id} className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-                      • {q.text}
+                    <li key={q.id} className="space-y-1">
+                      <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+                        • {q.text}
+                      </p>
+                      {q.hint && (
+                        <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+                          Подсказка: {q.hint}
+                        </p>
+                      )}
                     </li>
                   ))}
                 </ul>

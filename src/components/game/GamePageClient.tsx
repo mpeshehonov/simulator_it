@@ -10,7 +10,8 @@ import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
 import { PlayerProfileCard } from "@/components/game/PlayerProfileCard";
 import { PlayerActionsCard } from "@/components/game/PlayerActionsCard";
-import { useAppStore } from "@/store/app";
+import { OnboardingTour } from "@/components/game/OnboardingTour";
+import { useAppStore, isOnboardingTourDone } from "@/store/app";
 
 const MOCK_PLAYER = {
   profession: "frontend" as const,
@@ -45,6 +46,7 @@ export function GamePageClient() {
   const [lastEvent, setLastEvent] = useState<{
     title: string;
     description: string;
+    hint?: string;
   } | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [lastDeltas, setLastDeltas] = useState<{
@@ -62,9 +64,11 @@ export function GamePageClient() {
     try {
       const result = await doAction(actionId, payload);
       if (result?.ok && result.event) {
+        const ev = result.event as typeof result.event & { hint?: string };
         setLastEvent({
-          title: result.event.title,
-          description: result.event.description,
+          title: ev.title,
+          description: ev.description,
+          hint: ev.hint,
         });
         const newPlayer = useAppStore.getState().player;
         const energyDelta = newPlayer ? newPlayer.energy - player.energy : 0;
@@ -102,6 +106,42 @@ export function GamePageClient() {
 
   const displayLastEvent = lastEvent ?? player?.lastEvent ?? null;
 
+  const onboardingTourStep = useAppStore((s) => s.onboardingTourStep);
+  const setOnboardingTourStep = useAppStore((s) => s.actions.setOnboardingTourStep);
+  const finishOnboardingTour = useAppStore((s) => s.actions.finishOnboardingTour);
+
+  const profileRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!player?.id || needsOnboarding) return;
+    if (isOnboardingTourDone(player.id)) return;
+    setOnboardingTourStep(0);
+  }, [player?.id, needsOnboarding, setOnboardingTourStep]);
+
+  const tourTargetRef =
+    onboardingTourStep === 0
+      ? profileRef
+      : onboardingTourStep === 1
+        ? actionsRef
+        : onboardingTourStep === 2
+          ? navRef
+          : { current: null };
+
+  const handleTourNext = () => {
+    if (onboardingTourStep === 3 && player) {
+      finishOnboardingTour(player.id);
+      return;
+    }
+    const next = ((onboardingTourStep as number) + 1) as 0 | 1 | 2 | 3;
+    setOnboardingTourStep(next);
+  };
+
+  const handleTourSkip = () => {
+    if (player) finishOnboardingTour(player.id);
+  };
+
   if (initData && isLoading && !needsOnboarding && !player) {
     return <LoadingScreen />;
   }
@@ -136,16 +176,20 @@ export function GamePageClient() {
 
         {data && (
           <>
-            <PlayerProfileCard data={data} lastDeltas={lastDeltas} />
+            <div ref={profileRef}>
+              <PlayerProfileCard data={data} lastDeltas={lastDeltas} />
+            </div>
             {player && (
-              <PlayerActionsCard
-                canAct={!!canAct}
-                canRest={canRest}
-                restCooldownLeftMin={restCooldownLeftMin}
-                actionLoading={actionLoading}
-                onLearn={() => handleAction("learn")}
-                onRest={() => handleAction("rest")}
-              />
+              <div ref={actionsRef}>
+                <PlayerActionsCard
+                  canAct={!!canAct}
+                  canRest={canRest}
+                  restCooldownLeftMin={restCooldownLeftMin}
+                  actionLoading={actionLoading}
+                  onLearn={() => handleAction("learn")}
+                  onRest={() => handleAction("rest")}
+                />
+              </div>
             )}
           </>
         )}
@@ -163,6 +207,11 @@ export function GamePageClient() {
                 <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
                   {displayLastEvent.description}
                 </p>
+                {displayLastEvent.hint && (
+                  <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+                    Зачем это важно: {displayLastEvent.hint}
+                  </p>
+                )}
               </>
             ) : (
               <p className="pixel-font text-sm text-muted-foreground">—</p>
@@ -191,7 +240,7 @@ export function GamePageClient() {
           </Card>
         )}
 
-        <nav className="grid gap-4">
+        <nav ref={navRef} className="grid gap-4">
           <Link href="/how-to-play">
             <Button variant="secondary" className="w-full">
               ❓ Как играть
@@ -222,6 +271,15 @@ export function GamePageClient() {
             </Button>
           </Link>
         </nav>
+
+        {player && onboardingTourStep !== "done" && typeof onboardingTourStep === "number" && (
+          <OnboardingTour
+            step={onboardingTourStep}
+            targetRef={tourTargetRef as React.RefObject<HTMLElement | null>}
+            onNext={handleTourNext}
+            onSkip={handleTourSkip}
+          />
+        )}
 
         {!initData && (
           <p className="text-center pixel-font text-[10px] text-muted-foreground">
