@@ -122,22 +122,26 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
         bugDropCounter = 0;
         shouldDrop = true;
       }
+      const minBugX = 0;
+      const maxBugX = CANVAS_W - BUG_W;
       for (const b of bugs) {
         if (!b.alive) continue;
         b.x += BUG_SPEED_X * bugDir;
+        b.x = Math.max(minBugX, Math.min(maxBugX, b.x));
         if (shouldDrop) b.y += BUG_SPEED_Y;
       }
       if (shouldDrop) bugDir *= -1;
 
-      // Clamp bugs horizontal
+      // Отскок от краёв: развернуть направление и сбросить кадры до следующего дропа
       let edge = 0;
       for (const b of bugs) {
         if (!b.alive) continue;
-        if (b.x < 0) edge = -1;
-        if (b.x + BUG_W > CANVAS_W) edge = 1;
+        if (b.x <= minBugX) edge = -1;
+        if (b.x >= maxBugX) edge = 1;
       }
       if (edge !== 0) {
-        bugDir = edge;
+        bugDir = -edge;
+        bugDropCounter = 0;
         for (const b of bugs) {
           if (b.alive) b.y += BUG_SPEED_Y;
         }
