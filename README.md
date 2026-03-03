@@ -23,4 +23,6 @@ npm run dev
 
 ## Структура
 
-См. `docs/CONCEPT.md` — концепция и механики. `docs/MANUAL_STEPS.md` — что сделать вручную.
+- `docs/CONCEPT.md` — концепция и механики
+- `docs/MANUAL_STEPS.md` — что сделать вручную
+- `docs/ROADMAP_AND_MONETIZATION.md` — дорожная карта, улучшения (игрок / лид / монетизация) и план развития
