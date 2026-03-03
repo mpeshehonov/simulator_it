@@ -1,4 +1,5 @@
 // Game-related types
+/** Базовые действия на главном экране (обратная совместимость). */
 export type ActionType = "learn" | "task" | "rest";
 
 export type EventEffect =

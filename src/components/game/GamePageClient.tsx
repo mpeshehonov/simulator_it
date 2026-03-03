@@ -19,6 +19,7 @@ import {
   REST_COOLDOWN_MINUTES,
 } from "@/lib/game/constants";
 import { PROFESSION_NAMES } from "@/lib/game/professions";
+import { ACTION_DEFINITIONS, DEFAULT_ACTION_IDS } from "@/lib/game/actions";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
@@ -73,11 +74,11 @@ export function GamePageClient() {
     ? PROFESSION_NAMES[data.profession as keyof typeof PROFESSION_NAMES]
     : "—";
 
-  const handleAction = async (action: "learn" | "task" | "rest") => {
+  const handleAction = async (actionId: string, payload?: unknown) => {
     if (!player || actionLoading) return;
-    setActionLoading(action);
+    setActionLoading(actionId);
     try {
-      const result = await doAction(action);
+      const result = await doAction(actionId, payload);
       if (result?.ok && result.event) {
         setLastEvent({
           title: result.event.title,
@@ -97,6 +98,13 @@ export function GamePageClient() {
       setActionLoading(null);
     }
   };
+
+  /** Дополнительные действия (не learn/task/rest) — расширяемый список из реестра. */
+  const extraActions = ACTION_DEFINITIONS.filter(
+    (a) => !DEFAULT_ACTION_IDS.includes(a.id as (typeof DEFAULT_ACTION_IDS)[number])
+  );
+  const [minigameOpen, setMinigameOpen] = useState<string | null>(null);
+  const [minigameScore, setMinigameScore] = useState(0);
 
   const canAct = player && player.energy >= 1;
 
@@ -260,6 +268,90 @@ export function GamePageClient() {
                 </div>
               </CardFooter>
             )}
+          </Card>
+        )}
+
+        {player && extraActions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Дополнительные действия</CardTitle>
+              <p className="text-xs text-muted-foreground">Расширяемые действия и мини-игры</p>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              {extraActions.map((def) =>
+                def.kind === "minigame" ? (
+                  <Button
+                    key={def.id}
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                    disabled={!canAct || actionLoading !== null}
+                    onClick={() => setMinigameOpen(def.id)}
+                  >
+                    🎮 {def.name}
+                  </Button>
+                ) : (
+                  <Button
+                    key={def.id}
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                    disabled={!canAct || actionLoading !== null}
+                    onClick={() => handleAction(def.id)}
+                  >
+                    {actionLoading === def.id ? "..." : def.name}
+                  </Button>
+                )
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {minigameOpen === "fix_bugs" && player && (
+          <Card className="border-primary/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Фикс багов (заглушка)</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Мини-игра «скобка vs баги» будет здесь. Пока можно отправить тестовые очки.
+              </p>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              <label className="text-xs">
+                Очки:{" "}
+                <input
+                  type="number"
+                  min={0}
+                  max={999}
+                  value={minigameScore}
+                  onChange={(e) => setMinigameScore(Number(e.target.value) || 0)}
+                  className="w-16 rounded border bg-background px-2 py-1 text-sm"
+                />
+              </label>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  disabled={!canAct || actionLoading !== null}
+                  onClick={async () => {
+                    await handleAction("fix_bugs", { score: minigameScore });
+                    setMinigameOpen(null);
+                    setMinigameScore(0);
+                  }}
+                >
+                  {actionLoading === "fix_bugs" ? "..." : "Завершить и получить награду"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setMinigameOpen(null);
+                    setMinigameScore(0);
+                  }}
+                >
+                  Отмена
+                </Button>
+              </div>
+            </CardContent>
           </Card>
         )}
 

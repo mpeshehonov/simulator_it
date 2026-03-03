@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { getTelegramIdFromRequest } from "@/lib/telegram/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { rowToPlayer } from "@/lib/db/player";
-import { executeLearn, executeTask, executeRest } from "@/lib/game/action";
+import { executeAction, getActionDefinition, ALL_ACTION_IDS } from "@/lib/game/actions";
 import { applyPassiveEnergyRegen } from "@/lib/game/energy";
-import type { ActionType } from "@/types/game";
 
 export async function POST(request: Request) {
   try {
@@ -14,10 +13,14 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const action = body.action as ActionType;
+    const action = typeof body.action === "string" ? body.action.trim() : "";
+    const payload = body.payload;
 
-    if (!action || !["learn", "task", "rest"].includes(action)) {
-      return NextResponse.json({ error: "Invalid action: learn | task | rest" }, { status: 400 });
+    if (!action || !ALL_ACTION_IDS.includes(action)) {
+      return NextResponse.json(
+        { error: `Invalid action. Allowed: ${ALL_ACTION_IDS.join(", ")}` },
+        { status: 400 }
+      );
     }
 
     const supabase = createAdminClient();
@@ -47,19 +50,7 @@ export async function POST(request: Request) {
 
     let result;
     try {
-      switch (action) {
-        case "learn":
-          result = executeLearn(player);
-          break;
-        case "task":
-          result = executeTask(player);
-          break;
-        case "rest":
-          result = executeRest(player);
-          break;
-        default:
-          return NextResponse.json({ error: "Unknown action" }, { status: 400 });
-      }
+      result = executeAction(action, player, payload);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Action failed";
       return NextResponse.json({ error: msg }, { status: 400 });
@@ -79,7 +70,8 @@ export async function POST(request: Request) {
       updated_at: new Date().toISOString(),
     };
 
-    if (action === "rest" && result.player.lastRestAt != null) {
+    const actionDef = getActionDefinition(action);
+    if (actionDef?.id === "rest" && result.player.lastRestAt != null) {
       updatePayload.last_rest_at = result.player.lastRestAt;
     }
 

@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
-import type { ActionType } from "@/types/game";
 import type { Player } from "@/types/player";
 import { useAppStore } from "@/store/app";
 
 interface UsePlayerOptions {
   initData: string;
+}
+
+/** Результат выполнения действия (простое или мини-игра). */
+export interface DoActionResult {
+  ok: boolean;
+  event?: { title: string; description: string; tone: string };
+  expGained?: number;
+  moneyGained?: number;
 }
 
 interface UsePlayerResult {
@@ -18,12 +25,8 @@ interface UsePlayerResult {
   updateProfession: (profession: string) => Promise<boolean>;
   upgradeSkill: (branchId: string) => Promise<{ ok: boolean; error?: string }>;
   refresh: () => Promise<void>;
-  doAction: (action: ActionType) => Promise<{
-    ok: boolean;
-    event?: { title: string; description: string; tone: string };
-    expGained?: number;
-    moneyGained?: number;
-  } | null>;
+  /** Выполнить действие по id (learn, task, rest, fix_bugs, partner_subscribe, …). Для minigame передать payload (напр. { score }). */
+  doAction: (actionId: string, payload?: unknown) => Promise<DoActionResult | null>;
 }
 
 const defaultFetchOptions: RequestInit = {
@@ -172,12 +175,14 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
   }, [initData, actions]);
 
   const doAction = useCallback(
-    async (action: ActionType) => {
+    async (actionId: string, payload?: unknown): Promise<DoActionResult | null> => {
       if (!player) return null;
       const opts: RequestInit = {
         method: "POST",
         ...defaultFetchOptions,
-        body: JSON.stringify({ action }),
+        body: JSON.stringify(
+          payload !== undefined ? { action: actionId, payload } : { action: actionId }
+        ),
         headers: {
           ...defaultFetchOptions.headers,
           ...(initData ? { "X-Telegram-Init-Data": initData } : {}),
