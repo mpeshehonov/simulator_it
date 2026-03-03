@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Card, CardContent } from "@/components/ui/pixelact-ui";
+import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui/pixelact-ui";
 
 interface PlayerActionsCardProps {
   canAct: boolean;
@@ -22,10 +22,10 @@ export function PlayerActionsCard({
 }: PlayerActionsCardProps) {
   return (
     <Card>
-      <CardContent className="flex flex-col gap-2 pt-4">
-        <p className="w-full text-center pixel-font text-[10px] text-muted-foreground">
-          Действия
-        </p>
+      <CardHeader className="pb-2">
+        <CardTitle className="pixel-font text-sm">Действия</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2">
         <div className="flex w-full flex-col gap-2 sm:grid sm:grid-cols-3">
         <Button
           variant="default"

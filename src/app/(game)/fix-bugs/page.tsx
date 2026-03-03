@@ -7,13 +7,14 @@ import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/u
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
+import { FixBugsGame } from "@/components/game/FixBugsGame";
 
 export default function FixBugsPage() {
   const router = useRouter();
   const { initData, webApp } = useTelegram();
   const { player, isLoading, doAction } = usePlayer({ initData });
-  const [minigameScore, setMinigameScore] = useState(0);
   const [actionLoading, setActionLoading] = useState(false);
+  const [gameCompleted, setGameCompleted] = useState(false);
 
   useEffect(() => {
     if (!isLoading && initData && !player) {
@@ -33,13 +34,13 @@ export default function FixBugsPage() {
     };
   }, [webApp, router]);
 
-  const handleComplete = async () => {
+  const handleGameComplete = async (score: number) => {
     if (!player || actionLoading) return;
     setActionLoading(true);
     try {
-      const result = await doAction("fix_bugs", { score: minigameScore });
+      const result = await doAction("fix_bugs", { score });
       if (result?.ok) {
-        setMinigameScore(0);
+        setGameCompleted(true);
       }
     } finally {
       setActionLoading(false);
@@ -71,41 +72,55 @@ export default function FixBugsPage() {
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Фикс багов</h1>
           <p className="mt-1 pixel-font text-xs text-muted-foreground">
-            Мини-игра «скобка vs баги» — скоро здесь. Пока можно отправить тестовые очки.
+            Мини-игра: скобка {'}'} против багов 🐛. Уничтожь всех и получи награду по очкам.
           </p>
         </header>
 
         <Card className="border-primary/50">
           <CardHeader className="pb-2">
-            <CardTitle className="pixel-font text-sm">Заглушка</CardTitle>
+            <CardTitle className="pixel-font text-sm">Скобка vs баги</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <label className="block pixel-font text-xs">
-              Очки:{" "}
-              <input
-                type="number"
-                min={0}
-                max={999}
-                value={minigameScore}
-                onChange={(e) => setMinigameScore(Number(e.target.value) || 0)}
-                className="w-20 rounded border bg-background px-2 py-1.5 text-sm"
-              />
-            </label>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                className="flex-1"
-                disabled={!canAct || actionLoading}
-                onClick={handleComplete}
-              >
-                {actionLoading ? "..." : "Завершить и получить награду"}
-              </Button>
-              <Link href="/tasks">
-                <Button variant="secondary" size="sm">
-                  К заданиям
-                </Button>
-              </Link>
-            </div>
+          <CardContent className="space-y-4">
+            {gameCompleted ? (
+              <div className="space-y-3">
+                <p className="pixel-font text-sm text-muted-foreground">
+                  Награда начислена. Можешь сыграть ещё раз (тратится энергия) или вернуться к
+                  заданиям.
+                </p>
+                <div className="flex gap-2">
+                  <Link href="/tasks" className="flex-1">
+                    <Button variant="default" size="sm" className="w-full">
+                      К заданиям
+                    </Button>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setGameCompleted(false)}
+                    className="pixel-font rounded border border-border px-3 py-2 text-sm"
+                  >
+                    Ещё раз
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <FixBugsGame
+                  key={gameCompleted ? "done" : "play"}
+                  onComplete={handleGameComplete}
+                  disabled={!canAct || actionLoading}
+                />
+                {actionLoading && (
+                  <p className="pixel-font text-center text-xs text-muted-foreground">
+                    Начисляем награду…
+                  </p>
+                )}
+                <Link href="/tasks" className="block">
+                  <Button variant="secondary" size="sm" className="w-full">
+                    ← К заданиям
+                  </Button>
+                </Link>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
