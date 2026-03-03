@@ -163,6 +163,27 @@ export function GamePageClient() {
           </CardContent>
         </Card>
 
+        {data && expForInterview > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="pixel-font text-sm">Путь к собеседованию</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p className="pixel-font text-[10px] text-muted-foreground">
+                EXP: {data.exp} / {expForInterview}
+              </p>
+              <div className="h-2 w-full overflow-hidden rounded bg-muted">
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{
+                    width: `${Math.min(100, Math.round((data.exp / expForInterview) * 100))}%`,
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <nav className="grid gap-3">
           <Link href="/how-to-play">
             <Button variant="secondary" className="w-full">
