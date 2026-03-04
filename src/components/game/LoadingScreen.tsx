@@ -10,7 +10,7 @@ export function LoadingScreen({ message }: LoadingScreenProps) {
   return (
     <div className="app-safe-top flex min-h-screen items-center justify-center px-4">
       <Card>
-        <CardContent className="flex flex-col items-center gap-4 px-6 py-4">
+        <CardContent className="flex flex-col items-center gap-3 px-6 py-4">
           <p className="pixel-font text-xs text-muted-foreground">{message ?? "Загрузка..."}</p>
           <div className="loading-bar w-48 max-w-full">
             <div className="loading-bar-track">

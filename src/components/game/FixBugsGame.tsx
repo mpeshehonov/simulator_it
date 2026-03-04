@@ -264,7 +264,7 @@ export function FixBugsGame({ onComplete, disabled }: FixBugsGameProps) {
           type="button"
           onClick={startGame}
           disabled={disabled}
-          className="touch-manipulation pixel-font min-h-[48px] w-full rounded border-2 border-primary bg-primary/20 px-4 py-4 text-base font-medium text-primary transition-colors active:bg-primary/40 disabled:opacity-50"
+          className="touch-manipulation pixel-font min-h-[48px] w-full rounded border-2 border-primary bg-primary/20 px-4 py-4 text-sm font-medium text-primary transition-colors active:bg-primary/40 disabled:opacity-50"
         >
           Начать игру · {ENERGY_PER_ACTION} ⚡
         </button>

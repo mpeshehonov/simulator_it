@@ -48,7 +48,7 @@ export default function TasksPage() {
 
   if (!initData) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center pixel-font text-sm text-muted-foreground">
           Откройте приложение из Telegram.
         </p>
@@ -65,7 +65,7 @@ export default function TasksPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-8">
+      <div className="mx-auto max-w-md space-y-6">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Задания</h1>
           <p className="mt-1 pixel-font text-xs text-muted-foreground">
@@ -104,7 +104,11 @@ export default function TasksPage() {
           </CardHeader>
           <CardContent>
             <Link href="/channels">
-              <Button variant="secondary" size="sm" className="w-full">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="w-full whitespace-normal leading-tight text-[11px] sm:text-xs"
+              >
                 Перейти к каналам · бесплатно
               </Button>
             </Link>

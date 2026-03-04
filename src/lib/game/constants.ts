@@ -1,5 +1,5 @@
 // Энергия
-export const MAX_ENERGY = 10;
+export const MAX_ENERGY = 15;
 export const ENERGY_PER_ACTION = 1;
 export const ENERGY_REGEN_HOURS = 2;
 

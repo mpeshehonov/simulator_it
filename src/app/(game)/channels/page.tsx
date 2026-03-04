@@ -88,7 +88,7 @@ export default function ChannelsPage() {
 
   if (!initData) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center text-sm text-muted-foreground">Откройте приложение из Telegram.</p>
         <Link href="/">
           <Button variant="secondary">На главную</Button>
@@ -105,7 +105,7 @@ export default function ChannelsPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-8">
+      <div className="mx-auto max-w-md space-y-6">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Подписка на каналы</h1>
           <p className="mt-2 pixel-font text-xs text-muted-foreground leading-relaxed">
@@ -122,13 +122,13 @@ export default function ChannelsPage() {
           <CardHeader className="pb-2">
             <CardTitle className="pixel-font text-sm">Партнёрские каналы</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
+          <CardContent className="flex flex-col gap-3">
             {loadingChannels ? (
               <p className="pixel-font text-xs text-muted-foreground">Загрузка…</p>
             ) : sortedChannels.length === 0 ? (
               <p className="pixel-font text-xs text-muted-foreground">Пока нет каналов.</p>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
                 {sortedChannels.map((ch) => {
                   const completed = completedIds.includes(ch.id);
                   return (

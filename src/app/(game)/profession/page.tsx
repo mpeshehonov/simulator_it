@@ -50,7 +50,7 @@ export default function ProfessionPage() {
 
   if (!initData) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center text-muted-foreground">
           Откройте приложение из Telegram, чтобы менять профессию.
         </p>
@@ -91,7 +91,7 @@ export default function ProfessionPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-8">
+      <div className="mx-auto max-w-md space-y-6">
         <header className="flex items-center justify-between py-4">
           {!initData ? (
             <Link href="/">

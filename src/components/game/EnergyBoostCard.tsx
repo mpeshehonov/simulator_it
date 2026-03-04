@@ -64,22 +64,30 @@ export function EnergyBoostCard({ initData, onPurchased }: EnergyBoostCardProps)
         <Button
           variant="secondary"
           size="sm"
-          className="w-full justify-between"
+          className="w-full items-center justify-between gap-2 overflow-hidden"
           disabled={!!loading}
           onClick={() => handleBuy("energy_boost")}
         >
-          <span>+{STARS_ENERGY_BOOST} энергии</span>
-          <span className="pixel-font text-primary">{STARS_ENERGY_BOOST_PRICE} ⭐</span>
+          <span className="truncate text-left text-[11px] sm:text-xs">
+            +{STARS_ENERGY_BOOST} энергии
+          </span>
+          <span className="pixel-font text-primary shrink-0">
+            {STARS_ENERGY_BOOST_PRICE} ⭐
+          </span>
         </Button>
         <Button
           variant="secondary"
           size="sm"
-          className="w-full justify-between"
+          className="w-full items-center justify-between gap-2 overflow-hidden"
           disabled={!!loading}
           onClick={() => handleBuy("full_restore")}
         >
-          <span>Полное восстановление</span>
-          <span className="pixel-font text-primary">{STARS_FULL_RESTORE_PRICE} ⭐</span>
+          <span className="truncate text-left text-[11px] sm:text-xs">
+            Полное восстановление
+          </span>
+          <span className="pixel-font text-primary shrink-0">
+            {STARS_FULL_RESTORE_PRICE} ⭐
+          </span>
         </Button>
       </CardContent>
     </Card>

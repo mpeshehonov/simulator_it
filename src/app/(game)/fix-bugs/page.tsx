@@ -51,7 +51,7 @@ export default function FixBugsPage() {
 
   if (!initData) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center pixel-font text-sm text-muted-foreground">
           Откройте приложение из Telegram.
         </p>
@@ -90,8 +90,8 @@ export default function FixBugsPage() {
                   Награда начислена. Можешь сыграть ещё раз (тратится энергия) или вернуться к
                   заданиям.
                 </p>
-                <div className="flex gap-3">
-                  <Link href="/tasks" className="flex-1">
+                <div className="flex flex-col gap-3">
+                  <Link href="/tasks" className="block w-full">
                     <Button variant="default" size="sm" className="w-full">
                       К заданиям
                     </Button>
@@ -99,7 +99,7 @@ export default function FixBugsPage() {
                   <button
                     type="button"
                     onClick={() => setGameCompleted(false)}
-                    className="pixel-font rounded border border-border px-3 py-2 text-sm"
+                    className="pixel-font w-full rounded border border-border px-3 py-2 text-sm"
                   >
                     Ещё раз
                   </button>

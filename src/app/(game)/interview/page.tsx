@@ -33,6 +33,7 @@ export default function InterviewPage() {
   const [cooldownLeftMs, setCooldownLeftMs] = useState(0);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; chance: number } | null>(null);
+  const [errorText, setErrorText] = useState<string | null>(null);
 
   useEffect(() => {
     const back = webApp?.BackButton;
@@ -53,6 +54,7 @@ export default function InterviewPage() {
     let cancelled = false;
     async function load() {
       setState("loading");
+      setErrorText(null);
       try {
         const res = await fetch("/api/interview", {
           headers: {
@@ -112,10 +114,37 @@ export default function InterviewPage() {
         },
       });
       const data = await res.json().catch(() => ({}));
-      if (data.ok) {
-        setResult({ success: !!data.success, chance: data.chance ?? 0 });
-        await refresh();
+
+      if (!res.ok || !data.ok) {
+        const code = data.error as string | undefined;
+
+        if (code === "cooldown") {
+          setState("cooldown");
+          setCooldownLeftMs(data.cooldownLeftMs ?? 0);
+        } else if (code === "not_enough_exp") {
+          setState("not_enough_exp");
+          setMeta({
+            chance: 0,
+            requiredExp: data.requiredExp ?? meta?.requiredExp ?? 0,
+            currentExp: data.currentExp ?? meta?.currentExp ?? 0,
+            questions: [],
+          });
+        } else if (code === "max_level") {
+          setState("max_level");
+        } else {
+          setErrorText(
+            "Не удалось сохранить результат собеседования. Попробуй ещё раз чуть позже."
+          );
+        }
+
+        return;
       }
+
+      setResult({ success: !!data.success, chance: data.chance ?? 0 });
+      setErrorText(null);
+      await refresh();
+    } catch {
+      setErrorText("Не удалось пройти собеседование. Проверь соединение и попробуй снова.");
     } finally {
       setSubmitLoading(false);
     }
@@ -123,7 +152,7 @@ export default function InterviewPage() {
 
   if (!initData) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center pixel-font text-sm text-muted-foreground">
           Откройте приложение из Telegram.
         </p>
@@ -149,7 +178,7 @@ export default function InterviewPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto flex max-w-md flex-col gap-6">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
         <header className="flex items-center justify-between py-4">
           {!initData ? (
             <Link href="/">
@@ -271,6 +300,12 @@ export default function InterviewPage() {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {errorText && (
+          <p className="pixel-font text-xs text-destructive leading-relaxed">
+            {errorText}
+          </p>
         )}
       </div>
     </div>

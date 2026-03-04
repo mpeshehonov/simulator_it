@@ -80,7 +80,7 @@ export function OnboardingTour({ step, targetRef, onNext, onSkip }: OnboardingTo
       {/* Тултип */}
       <div className="relative z-10 w-full max-w-md rounded-lg border border-border bg-card p-4 shadow-xl">
         <p className="pixel-font mb-4 text-sm leading-relaxed text-foreground">{message}</p>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
           <Button variant="secondary" size="sm" onClick={onSkip} className="flex-1">
             Пропустить
           </Button>

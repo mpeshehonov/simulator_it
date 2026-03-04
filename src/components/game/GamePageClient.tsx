@@ -149,7 +149,7 @@ export function GamePageClient() {
 
   if (initData && error) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="pixel-font text-destructive">{error}</p>
         <Button variant="secondary" onClick={() => window.location.reload()}>
           Обновить
@@ -160,7 +160,7 @@ export function GamePageClient() {
 
   if (initData && !player && !needsOnboarding) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center pixel-font text-muted-foreground">
           Не удалось загрузить профиль. Откройте приложение из Telegram.
         </p>
@@ -170,7 +170,7 @@ export function GamePageClient() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background p-4 pb-8">
-      <div className="mx-auto max-w-md space-y-8">
+      <div className="mx-auto max-w-md space-y-6">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
         </header>
@@ -195,55 +195,57 @@ export function GamePageClient() {
           </>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="pixel-font text-sm">Последнее событие</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-1">
-            {displayLastEvent ? (
-              <>
-                <p className="pixel-font text-sm font-medium text-foreground leading-relaxed">
-                  {displayLastEvent.title}
-                </p>
-                <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
-                  {displayLastEvent.description}
-                </p>
-                {displayLastEvent.hint && (
-                  <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-                    Зачем это важно: {displayLastEvent.hint}
-                  </p>
-                )}
-              </>
-            ) : (
-              <p className="pixel-font text-sm text-muted-foreground">—</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {data && expForInterview > 0 && (
+        <div className="space-y-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="pixel-font text-sm">Путь к собеседованию</CardTitle>
+            <CardHeader>
+              <CardTitle className="pixel-font text-sm">Последнее событие</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-                EXP: {data.exp} / {expForInterview}
-              </p>
-              <div className="h-2 w-full overflow-hidden rounded bg-muted">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{
-                    width: `${Math.min(100, Math.round((data.exp / expForInterview) * 100))}%`,
-                  }}
-                />
-              </div>
+            <CardContent className="space-y-1">
+              {displayLastEvent ? (
+                <>
+                  <p className="pixel-font text-sm font-medium text-foreground leading-relaxed">
+                    {displayLastEvent.title}
+                  </p>
+                  <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
+                    {displayLastEvent.description}
+                  </p>
+                  {displayLastEvent.hint && (
+                    <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+                      Зачем это важно: {displayLastEvent.hint}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="pixel-font text-sm text-muted-foreground">—</p>
+              )}
             </CardContent>
           </Card>
-        )}
 
-        {player && <EnergyBoostCard initData={initData ?? null} onPurchased={refresh} />}
+          {data && expForInterview > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="pixel-font text-sm">Путь к собеседованию</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+                  EXP: {data.exp} / {expForInterview}
+                </p>
+                <div className="h-2 w-full overflow-hidden rounded bg-muted">
+                  <div
+                    className="h-full bg-primary transition-all"
+                    style={{
+                      width: `${Math.min(100, Math.round((data.exp / expForInterview) * 100))}%`,
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-        <nav ref={navRef} className="grid gap-4">
+          {player && <EnergyBoostCard initData={initData ?? null} onPurchased={refresh} />}
+        </div>
+
+        <nav ref={navRef} className="grid gap-3">
           <Link href="/how-to-play">
             <Button variant="secondary" className="w-full">
               ❓ Как играть

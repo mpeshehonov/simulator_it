@@ -128,7 +128,7 @@ export default function SkillsPage() {
 
   if (!initData) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-4">
         <p className="text-center pixel-font text-xs text-muted-foreground">
           Откройте приложение из Telegram.
         </p>
@@ -152,7 +152,7 @@ export default function SkillsPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-8">
+      <div className="mx-auto max-w-md space-y-6">
         <header className="grid grid-cols-3 items-center py-5">
           {!initData ? (
             <Link href="/">
