@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui/pixelact-ui";
-import { EXP_FOR_INTERVIEW, REST_COOLDOWN_MINUTES } from "@/lib/game/constants";
+import { SKILL_LEVELS_FOR_INTERVIEW, REST_COOLDOWN_MINUTES } from "@/lib/game/constants";
 import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
@@ -104,8 +104,10 @@ export function GamePageClient() {
     return () => clearInterval(id);
   }, [player?.lastRestAt, canRest]);
 
-  const expForInterview = data ? (EXP_FOR_INTERVIEW[data.level] ?? 0) : 0;
-  const canGoToInterview = data != null && data.exp >= expForInterview;
+  const requiredSkillLevels = data ? (SKILL_LEVELS_FOR_INTERVIEW[data.level] ?? 0) : 0;
+  const totalSkillLevels = data ? Object.values(data.skills ?? {}).reduce((a, b) => a + b, 0) : 0;
+  const canGoToInterview =
+    data != null && requiredSkillLevels > 0 && totalSkillLevels >= requiredSkillLevels;
 
   const displayLastEvent = lastEvent ?? player?.lastEvent ?? null;
 
@@ -223,20 +225,20 @@ export function GamePageClient() {
             </CardContent>
           </Card>
 
-          {data && expForInterview > 0 && (
+          {data && requiredSkillLevels > 0 && (
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="pixel-font text-sm">Путь к собеседованию</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-                  EXP: {data.exp} / {expForInterview}
+                  Уровни навыков: {totalSkillLevels} / {requiredSkillLevels} (прокачивай за EXP)
                 </p>
                 <div className="h-2 w-full overflow-hidden rounded bg-muted">
                   <div
                     className="h-full bg-primary transition-all"
                     style={{
-                      width: `${Math.min(100, Math.round((data.exp / expForInterview) * 100))}%`,
+                      width: `${Math.min(100, Math.round((totalSkillLevels / requiredSkillLevels) * 100))}%`,
                     }}
                   />
                 </div>
@@ -264,8 +266,8 @@ export function GamePageClient() {
               className="w-full"
               disabled={!canGoToInterview}
               title={
-                !canGoToInterview && data
-                  ? `Нужно ${expForInterview} EXP для собеседования (сейчас ${data.exp})`
+                !canGoToInterview && data && requiredSkillLevels > 0
+                  ? `Нужно ${requiredSkillLevels} уровней навыков для собеседования (сейчас ${totalSkillLevels}). Прокачивай навыки за EXP.`
                   : undefined
               }
             >

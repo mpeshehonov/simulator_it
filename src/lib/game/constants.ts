@@ -7,14 +7,14 @@ export const ENERGY_REGEN_HOURS = 2;
 export const INTERVIEW_COOLDOWN_DAYS = 1;
 export const INTERVIEW_QUESTIONS_COUNT = 3;
 export const INTERVIEW_BASE_SUCCESS_CHANCE = 0.4;
-/** Минимальный EXP для попытки собеседования на следующий уровень */
-export const EXP_FOR_INTERVIEW: Record<number, number> = {
-  0: 50,
-  1: 100,
-  2: 200,
-  3: 400,
-  4: 800,
-  5: 0, // Lead — не повышаемся
+/** Минимальная сумма уровней навыков (по всем веткам) для допуска к собеседованию на следующий уровень. EXP тратится только на прокачку навыков. */
+export const SKILL_LEVELS_FOR_INTERVIEW: Record<number, number> = {
+  0: 1,   // Безработный → Стажёр: хотя бы 1 уровень
+  1: 3,   // Стажёр → Джуниор: 3 уровня
+  2: 6,   // Джуниор → Мидл: 6 уровней
+  3: 12,  // Мидл → Синьор: 12 уровней
+  4: 20,  // Синьор → Лид: 20 уровней
+  5: 0,   // Lead — не повышаемся
 };
 
 // Навыки: EXP за один уровень навыка (0→1 = 20, 1→2 = 20, ...)

@@ -16,12 +16,12 @@ interface InterviewQuestionDto {
 
 interface InterviewMeta {
   chance: number;
-  requiredExp: number;
-  currentExp: number;
+  requiredSkillLevels: number;
+  currentSkillLevels: number;
   questions: InterviewQuestionDto[];
 }
 
-type InterviewState = "idle" | "loading" | "ready" | "cooldown" | "not_enough_exp" | "max_level";
+type InterviewState = "idle" | "loading" | "ready" | "cooldown" | "not_enough_skills" | "max_level";
 
 export default function InterviewPage() {
   const router = useRouter();
@@ -65,12 +65,12 @@ export default function InterviewPage() {
         if (cancelled) return;
 
         if (!res.ok || !data.ok) {
-          if (data.error === "not_enough_exp") {
-            setState("not_enough_exp");
+          if (data.error === "not_enough_skills") {
+            setState("not_enough_skills");
             setMeta({
               chance: 0,
-              requiredExp: data.requiredExp,
-              currentExp: data.currentExp,
+              requiredSkillLevels: data.requiredSkillLevels ?? 0,
+              currentSkillLevels: data.currentSkillLevels ?? 0,
               questions: [],
             });
           } else if (data.error === "cooldown") {
@@ -86,8 +86,8 @@ export default function InterviewPage() {
 
         setMeta({
           chance: data.chance ?? 0,
-          requiredExp: data.requiredExp ?? 0,
-          currentExp: data.player?.exp ?? 0,
+          requiredSkillLevels: data.requiredSkillLevels ?? 0,
+          currentSkillLevels: data.currentSkillLevels ?? 0,
           questions: data.questions ?? [],
         });
         setState("ready");
@@ -121,12 +121,12 @@ export default function InterviewPage() {
         if (code === "cooldown") {
           setState("cooldown");
           setCooldownLeftMs(data.cooldownLeftMs ?? 0);
-        } else if (code === "not_enough_exp") {
-          setState("not_enough_exp");
+        } else if (code === "not_enough_skills") {
+          setState("not_enough_skills");
           setMeta({
             chance: 0,
-            requiredExp: data.requiredExp ?? meta?.requiredExp ?? 0,
-            currentExp: data.currentExp ?? meta?.currentExp ?? 0,
+            requiredSkillLevels: data.requiredSkillLevels ?? meta?.requiredSkillLevels ?? 0,
+            currentSkillLevels: data.currentSkillLevels ?? meta?.currentSkillLevels ?? 0,
             questions: [],
           });
         } else if (code === "max_level") {
@@ -193,18 +193,20 @@ export default function InterviewPage() {
           <div className="w-16" />
         </header>
 
-        {state === "not_enough_exp" && meta && (
+        {state === "not_enough_skills" && meta && (
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="pixel-font text-sm">Пока рано</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
-                Для следующего уровня нужно {meta.requiredExp} EXP, сейчас у тебя {meta.currentExp} EXP.
+                Для следующего уровня нужно {meta.requiredSkillLevels} уровней навыков (сумма по всем
+                веткам), сейчас у тебя {meta.currentSkillLevels}. Прокачивай навыки за EXP на
+                странице «Навыки».
               </p>
-              <Link href="/tasks" className="block w-full">
+              <Link href="/skills" className="block w-full">
                 <Button variant="default" size="sm" className="w-full">
-                  К заданиям
+                  К навыкам
                 </Button>
               </Link>
             </CardContent>
@@ -259,7 +261,7 @@ export default function InterviewPage() {
                   Шанс успеха (плюс‑минус): {chancePercent ?? 0}%
                 </p>
                 <p className="pixel-font text-[10px] text-muted-foreground">
-                  EXP: {meta.currentExp} / {meta.requiredExp}
+                  Уровни навыков: {meta.currentSkillLevels} / {meta.requiredSkillLevels}
                 </p>
               </div>
               <div className="space-y-2">

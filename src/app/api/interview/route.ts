@@ -3,7 +3,7 @@ import { getTelegramIdFromRequest } from "@/lib/telegram/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { rowToPlayer } from "@/lib/db/player";
 import {
-  EXP_FOR_INTERVIEW,
+  SKILL_LEVELS_FOR_INTERVIEW,
   INTERVIEW_COOLDOWN_DAYS,
 } from "@/lib/game/constants";
 import {
@@ -48,14 +48,15 @@ export async function GET(request: Request) {
       );
     }
 
-    const requiredExp = EXP_FOR_INTERVIEW[player.level] ?? 0;
-    if (player.exp < requiredExp) {
+    const requiredSkillLevels = SKILL_LEVELS_FOR_INTERVIEW[player.level] ?? 0;
+    const currentSkillLevels = Object.values(player.skills ?? {}).reduce((a, b) => a + b, 0);
+    if (currentSkillLevels < requiredSkillLevels) {
       return NextResponse.json(
         {
           ok: false,
-          error: "not_enough_exp",
-          requiredExp,
-          currentExp: player.exp,
+          error: "not_enough_skills",
+          requiredSkillLevels,
+          currentSkillLevels,
         },
         { status: 400 }
       );
@@ -81,7 +82,8 @@ export async function GET(request: Request) {
       player,
       questions,
       chance,
-      requiredExp,
+      requiredSkillLevels,
+      currentSkillLevels,
     });
   } catch (e) {
     console.error("Interview GET error:", e);
@@ -115,14 +117,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const requiredExp = EXP_FOR_INTERVIEW[player.level] ?? 0;
-    if (player.exp < requiredExp) {
+    const requiredSkillLevels = SKILL_LEVELS_FOR_INTERVIEW[player.level] ?? 0;
+    const currentSkillLevels = Object.values(player.skills ?? {}).reduce((a, b) => a + b, 0);
+    if (currentSkillLevels < requiredSkillLevels) {
       return NextResponse.json(
         {
           ok: false,
-          error: "not_enough_exp",
-          requiredExp,
-          currentExp: player.exp,
+          error: "not_enough_skills",
+          requiredSkillLevels,
+          currentSkillLevels,
         },
         { status: 400 }
       );
@@ -176,7 +179,8 @@ export async function POST(request: Request) {
       ok: true,
       success,
       chance,
-      requiredExp,
+      requiredSkillLevels,
+      currentSkillLevels,
       player: updatedPlayer,
     });
   } catch (e) {
