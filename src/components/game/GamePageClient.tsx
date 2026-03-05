@@ -80,6 +80,8 @@ export function GamePageClient() {
           energy: energyDelta !== 0 ? energyDelta : undefined,
         });
         deltasTimeoutRef.current = setTimeout(() => setLastDeltas({}), 1200);
+      } else {
+        await refresh();
       }
     } finally {
       setActionLoading(null);
@@ -170,7 +172,7 @@ export function GamePageClient() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background p-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
         </header>
@@ -195,7 +197,7 @@ export function GamePageClient() {
           </>
         )}
 
-        <div className="space-y-4">
+        <div className="flex flex-col gap-5">
           <Card>
             <CardHeader>
               <CardTitle className="pixel-font text-sm">Последнее событие</CardTitle>
@@ -245,7 +247,7 @@ export function GamePageClient() {
           {player && <EnergyBoostCard initData={initData ?? null} onPurchased={refresh} />}
         </div>
 
-        <nav ref={navRef} className="grid gap-3">
+        <nav ref={navRef} className="grid gap-5">
           <Link href="/how-to-play">
             <Button variant="secondary" className="w-full">
               ❓ Как играть

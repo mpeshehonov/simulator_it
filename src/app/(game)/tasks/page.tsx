@@ -65,7 +65,7 @@ export default function TasksPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
         <header className="py-4 text-center">
           <h1 className="pixel-font text-xl text-primary">Задания</h1>
           <p className="mt-1 pixel-font text-xs text-muted-foreground">

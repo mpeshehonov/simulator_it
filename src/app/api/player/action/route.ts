@@ -10,7 +10,10 @@ export async function POST(request: Request) {
   try {
     const telegramId = await getTelegramIdFromRequest(request);
     if (!telegramId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, error: "Unauthorized", code: "unauthorized" },
+        { status: 401 }
+      );
     }
 
     const body = await request.json().catch(() => ({}));
@@ -32,7 +35,10 @@ export async function POST(request: Request) {
       .single();
 
     if (fetchError || !row) {
-      return NextResponse.json({ error: "Player not found" }, { status: 404 });
+      return NextResponse.json(
+        { ok: false, error: "Player not found", code: "player_not_found" },
+        { status: 404 }
+      );
     }
 
     const regen = applyPassiveEnergyRegen(row.energy, row.energy_updated_at);

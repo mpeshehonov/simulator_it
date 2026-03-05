@@ -177,20 +177,21 @@ export function usePlayer({ initData }: UsePlayerOptions): UsePlayerResult {
   const doAction = useCallback(
     async (actionId: string, payload?: unknown): Promise<DoActionResult | null> => {
       if (!player) return null;
+      const headers: HeadersInit = {
+        ...defaultFetchOptions.headers,
+        ...(initData ? { "X-Telegram-Init-Data": initData } : {}),
+      };
       const opts: RequestInit = {
         method: "POST",
         ...defaultFetchOptions,
         body: JSON.stringify(
           payload !== undefined ? { action: actionId, payload } : { action: actionId }
         ),
-        headers: {
-          ...defaultFetchOptions.headers,
-          ...(initData ? { "X-Telegram-Init-Data": initData } : {}),
-        } as HeadersInit,
+        headers,
       };
       const res = await fetch("/api/player/action", opts);
       const data = await res.json().catch(() => ({}));
-      if (res.ok) {
+      if (res.ok && data.ok && data.player) {
         actions.setPlayer(data.player);
         return {
           ok: true,

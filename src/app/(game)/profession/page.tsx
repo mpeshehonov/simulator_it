@@ -91,7 +91,7 @@ export default function ProfessionPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
         <header className="flex items-center justify-between py-4">
           {!initData ? (
             <Link href="/">

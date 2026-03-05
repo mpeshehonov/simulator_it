@@ -43,51 +43,45 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
 
   return (
     <Card className="overflow-hidden">
-      <CardContent className="p-4">
-        <div className="flex gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            {Icon ? <Icon className="h-6 w-6" strokeWidth={2} /> : null}
+      <CardContent className="flex flex-col gap-3 p-4">
+        <div className="flex min-w-0 gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {Icon ? <Icon className="h-5 w-5" strokeWidth={2} /> : null}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium leading-tight text-foreground wrap-break-word">
+            <p className="text-sm font-medium leading-tight text-foreground">
               {branch.name}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Уровень {currentLevel} из {branch.maxLevel}
             </p>
-            {branch.description && (
-              <p className="mt-1.5 text-xs text-muted-foreground leading-snug">
-                {branch.description}
-              </p>
-            )}
-            <p className="mt-1 text-[10px] text-primary">
-              За уровень: +{Math.round(INCOME_SKILL_MULTIPLIER * 100)}% к доходу, +
-              {Math.round(INTERVIEW_SKILL_BONUS * 100)}% к шансу собеседования
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-col items-end justify-center gap-1">
-            {!isMax && (
-              <span className="text-[10px] text-muted-foreground">
-                {SKILL_UPGRADE_EXP_COST} EXP
-              </span>
-            )}
-            <Button
-              variant={isMax ? "secondary" : "default"}
-              size="sm"
-              disabled={!canUpgrade || loading}
-              onClick={handleUpgrade}
-              title={
-                isMax
-                  ? "Максимальный уровень"
-                  : !canUpgrade
-                    ? `Нужно ${SKILL_UPGRADE_EXP_COST} EXP`
-                    : undefined
-              }
-            >
-              {loading ? "..." : isMax ? "Макс" : `+1 · ${SKILL_UPGRADE_EXP_COST} EXP`}
-            </Button>
           </div>
         </div>
+        {branch.description && (
+          <p className="text-xs leading-snug text-muted-foreground">
+            {branch.description}
+          </p>
+        )}
+        <p className="text-[10px] leading-snug text-primary">
+          За уровень: +{Math.round(INCOME_SKILL_MULTIPLIER * 100)}% к доходу, +
+          {Math.round(INTERVIEW_SKILL_BONUS * 100)}% к шансу собеседования
+        </p>
+        <Button
+          variant={isMax ? "secondary" : "default"}
+          size="sm"
+          className="w-full"
+          disabled={!canUpgrade || loading}
+          onClick={handleUpgrade}
+          title={
+            isMax
+              ? "Максимальный уровень"
+              : !canUpgrade
+                ? `Нужно ${SKILL_UPGRADE_EXP_COST} EXP`
+                : undefined
+          }
+        >
+          {loading ? "..." : isMax ? "Макс" : `+1 уровень · ${SKILL_UPGRADE_EXP_COST} EXP`}
+        </Button>
       </CardContent>
     </Card>
   );
@@ -152,7 +146,7 @@ export default function SkillsPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
         <header className="grid grid-cols-3 items-center py-5">
           {!initData ? (
             <Link href="/">
@@ -207,7 +201,7 @@ export default function SkillsPage() {
           <h2 className="mb-4 pixel-font text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
             Ветки навыков
           </h2>
-          <div className="space-y-4">
+          <div className="flex flex-col gap-5">
             {branches.map((branch) => (
               <SkillCard
                 key={branch.id}

@@ -11,6 +11,8 @@ const TOUR_MESSAGES: Record<Exclude<OnboardingTourStep, "done">, string> = {
   3: "Вот и всё! Удачи в карьере.",
 };
 
+const TOOLTIP_GAP = 12;
+
 interface OnboardingTourProps {
   step: Exclude<OnboardingTourStep, "done">;
   targetRef: React.RefObject<HTMLElement | null>;
@@ -20,6 +22,7 @@ interface OnboardingTourProps {
 
 export function OnboardingTour({ step, targetRef, onNext, onSkip }: OnboardingTourProps) {
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [tooltipAbove, setTooltipAbove] = useState(false);
 
   useEffect(() => {
     const el = targetRef.current;
@@ -27,8 +30,14 @@ export function OnboardingTour({ step, targetRef, onNext, onSkip }: OnboardingTo
       setRect(null);
       return;
     }
-    const update = () => setRect(el.getBoundingClientRect());
-    update();
+    el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    const update = () => {
+      const r = el.getBoundingClientRect();
+      setRect(r);
+      const viewportMid = window.innerHeight / 2;
+      setTooltipAbove(r.top + r.height / 2 > viewportMid);
+    };
+    requestAnimationFrame(update);
     const ro = new ResizeObserver(update);
     ro.observe(el);
     window.addEventListener("scroll", update, true);
@@ -41,12 +50,26 @@ export function OnboardingTour({ step, targetRef, onNext, onSkip }: OnboardingTo
   const isLast = step === 3;
   const message = TOUR_MESSAGES[step];
 
+  const tooltipStyle: React.CSSProperties =
+    step !== 3 && rect
+      ? tooltipAbove
+        ? {
+            position: "fixed",
+            bottom: window.innerHeight - rect.top + TOOLTIP_GAP,
+            left: 16,
+            right: 16,
+            transform: "translateY(-100%)",
+          }
+        : { position: "fixed", top: rect.bottom + TOOLTIP_GAP, left: 16, right: 16 }
+      : { position: "relative" };
+
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-end p-4 pb-8"
+      className="fixed inset-0 z-50 flex flex-col items-center p-4 pb-8"
       aria-modal
       role="dialog"
       aria-label="Тур по интерфейсу"
+      style={{ justifyContent: step === 3 ? "flex-end" : "flex-start" }}
     >
       {/* Затемнение: для последнего шага — всё экран, иначе «дырка» вокруг цели */}
       {step === 3 ? (
@@ -77,8 +100,11 @@ export function OnboardingTour({ step, targetRef, onNext, onSkip }: OnboardingTo
         />
       )}
 
-      {/* Тултип */}
-      <div className="relative z-10 w-full max-w-md rounded-lg border border-border bg-card p-4 shadow-xl">
+      {/* Тултип: над целью (tooltipAbove) или под целью, чтобы не перекрывать */}
+      <div
+        className="relative z-10 mx-auto w-full max-w-md rounded-lg border border-border bg-card p-4 shadow-xl"
+        style={step === 3 ? {} : tooltipStyle}
+      >
         <p className="pixel-font mb-4 text-sm leading-relaxed text-foreground">{message}</p>
         <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
           <Button variant="secondary" size="sm" onClick={onSkip} className="flex-1">

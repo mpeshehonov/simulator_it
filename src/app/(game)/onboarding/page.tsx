@@ -87,7 +87,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="app-safe-top min-h-screen bg-background px-4 pb-8">
-      <div className="mx-auto max-w-md space-y-6">
+      <div className="mx-auto flex max-w-md flex-col gap-5">
         <header className="py-8 text-center">
           <h1 className="pixel-font text-xl text-primary">Симулятор айтишника</h1>
           <p className="mt-4 text-sm text-muted-foreground">
