@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui/pixelact-ui";
@@ -34,6 +34,8 @@ export default function InterviewPage() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [result, setResult] = useState<{ success: boolean; chance: number } | null>(null);
   const [errorText, setErrorText] = useState<string | null>(null);
+  /** После успешного POST не перезапрашивать GET: refresh() обновит player, эффект бы переключил на кулдаун и скрыл результат */
+  const submittedRef = useRef(false);
 
   useEffect(() => {
     const back = webApp?.BackButton;
@@ -50,6 +52,7 @@ export default function InterviewPage() {
   useEffect(() => {
     if (!initData || isLoading) return;
     if (!player) return;
+    if (submittedRef.current) return;
 
     let cancelled = false;
     async function load() {
@@ -142,6 +145,7 @@ export default function InterviewPage() {
 
       setResult({ success: !!data.success, chance: data.chance ?? 0 });
       setErrorText(null);
+      submittedRef.current = true;
       await refresh();
     } catch {
       setErrorText("Не удалось пройти собеседование. Проверь соединение и попробуй снова.");
