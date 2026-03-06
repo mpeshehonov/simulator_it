@@ -30,11 +30,30 @@ export interface SkillBranch {
   maxLevel: number;
 }
 
+/** Вариант ответа на вопрос собеседования (множественный выбор) */
+export interface InterviewOption {
+  id: string;
+  text: string;
+}
+
+/** Вопрос для клиента: текст + 4 варианта (правильный id не передаётся) */
+export interface InterviewQuestionDto {
+  id: string;
+  text: string;
+  options: InterviewOption[];
+}
+
+/** Ответ пользователя на один вопрос */
+export interface InterviewAnswerDto {
+  questionId: string;
+  selectedOptionId: string;
+}
+
+/** Устаревший тип (подсказки), оставлен для совместимости */
 export interface InterviewQuestion {
   id: string;
   text: string;
   profession: string;
-  /** Краткий ответ/подсказка для обучения */
   hint?: string;
 }
 

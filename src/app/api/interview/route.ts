@@ -5,12 +5,13 @@ import { rowToPlayer } from "@/lib/db/player";
 import {
   SKILL_LEVELS_FOR_INTERVIEW,
   INTERVIEW_COOLDOWN_DAYS,
+  INTERVIEW_QUESTIONS_BY_LEVEL,
+  INTERVIEW_PASSING_RATIO,
 } from "@/lib/game/constants";
 import {
-  getInterviewSuccessChance,
-  pickInterviewQuestions,
-  rollInterviewSuccess,
-} from "@/lib/game/interview";
+  getInterviewQuestionsForClient,
+  evaluateInterviewAnswers,
+} from "@/lib/game/interview-questions";
 import type { ProfessionId } from "@/lib/game/professions";
 
 function getCooldownLeftMs(lastAt: string | null): number {
@@ -74,14 +75,16 @@ export async function GET(request: Request) {
       );
     }
 
-    const chance = getInterviewSuccessChance(player.skills, player.reputation);
-    const questions = pickInterviewQuestions(player.profession as ProfessionId);
+    const questionCount = INTERVIEW_QUESTIONS_BY_LEVEL[player.level] ?? 3;
+    const questions = getInterviewQuestionsForClient(
+      player.profession as ProfessionId,
+      questionCount
+    );
 
     return NextResponse.json({
       ok: true,
       player,
       questions,
-      chance,
       requiredSkillLevels,
       currentSkillLevels,
     });
@@ -143,8 +146,36 @@ export async function POST(request: Request) {
       );
     }
 
-    const chance = getInterviewSuccessChance(player.skills, player.reputation);
-    const success = rollInterviewSuccess(chance);
+    let body: { answers?: { questionId: string; selectedOptionId: string }[] } = {};
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { ok: false, error: "invalid_body", message: "Ожидается JSON с полем answers." },
+        { status: 400 }
+      );
+    }
+    const answers = body.answers ?? [];
+    const expectedCount = INTERVIEW_QUESTIONS_BY_LEVEL[player.level] ?? 3;
+    if (answers.length === 0 || answers.length !== expectedCount) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "invalid_answers",
+          message: `Нужно ответить на все ${expectedCount} вопросов.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const questionIds = answers.map((a) => a.questionId);
+    const { correctCount, total } = evaluateInterviewAnswers(
+      player.profession as ProfessionId,
+      questionIds,
+      answers
+    );
+    const passingThreshold = Math.ceil(total * INTERVIEW_PASSING_RATIO);
+    const success = correctCount >= passingThreshold;
     const nowIso = new Date().toISOString();
 
     const newLevel = success && player.level < 5 ? player.level + 1 : player.level;
@@ -178,7 +209,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       success,
-      chance,
+      correctCount,
+      total,
       requiredSkillLevels,
       currentSkillLevels,
       player: updatedPlayer,

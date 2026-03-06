@@ -8,14 +8,18 @@ import { useTelegram } from "@/hooks/useTelegram";
 import { usePlayer } from "@/hooks/usePlayer";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
 
+interface InterviewOptionDto {
+  id: string;
+  text: string;
+}
+
 interface InterviewQuestionDto {
   id: string;
   text: string;
-  hint?: string;
+  options: InterviewOptionDto[];
 }
 
 interface InterviewMeta {
-  chance: number;
   requiredSkillLevels: number;
   currentSkillLevels: number;
   questions: InterviewQuestionDto[];
@@ -32,7 +36,13 @@ export default function InterviewPage() {
   const [meta, setMeta] = useState<InterviewMeta | null>(null);
   const [cooldownLeftMs, setCooldownLeftMs] = useState(0);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; chance: number } | null>(null);
+  const [result, setResult] = useState<{
+    success: boolean;
+    correctCount: number;
+    total: number;
+  } | null>(null);
+  /** Выбранный вариант по questionId */
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [errorText, setErrorText] = useState<string | null>(null);
   /** После успешного POST не перезапрашивать GET: refresh() обновит player, эффект бы переключил на кулдаун и скрыл результат */
   const submittedRef = useRef(false);
@@ -71,7 +81,6 @@ export default function InterviewPage() {
           if (data.error === "not_enough_skills") {
             setState("not_enough_skills");
             setMeta({
-              chance: 0,
               requiredSkillLevels: data.requiredSkillLevels ?? 0,
               currentSkillLevels: data.currentSkillLevels ?? 0,
               questions: [],
@@ -88,11 +97,11 @@ export default function InterviewPage() {
         }
 
         setMeta({
-          chance: data.chance ?? 0,
           requiredSkillLevels: data.requiredSkillLevels ?? 0,
           currentSkillLevels: data.currentSkillLevels ?? 0,
           questions: data.questions ?? [],
         });
+        setSelectedAnswers({});
         setState("ready");
       } catch {
         if (!cancelled) setState("idle");
@@ -105,16 +114,29 @@ export default function InterviewPage() {
     };
   }, [initData, isLoading, player]);
 
+  const handleSelect = (questionId: string, optionId: string) => {
+    setSelectedAnswers((prev) => ({ ...prev, [questionId]: optionId }));
+  };
+
+  const allAnswered =
+    meta?.questions.length &&
+    meta.questions.every((q) => selectedAnswers[q.id] != null && selectedAnswers[q.id] !== "");
+
   const handleSubmit = async () => {
-    if (!initData || submitLoading) return;
+    if (!initData || submitLoading || !meta || !allAnswered) return;
     setSubmitLoading(true);
     try {
+      const answers = meta.questions.map((q) => ({
+        questionId: q.id,
+        selectedOptionId: selectedAnswers[q.id],
+      }));
       const res = await fetch("/api/interview", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Telegram-Init-Data": initData,
         },
+        body: JSON.stringify({ answers }),
       });
       const data = await res.json().catch(() => ({}));
 
@@ -127,7 +149,6 @@ export default function InterviewPage() {
         } else if (code === "not_enough_skills") {
           setState("not_enough_skills");
           setMeta({
-            chance: 0,
             requiredSkillLevels: data.requiredSkillLevels ?? meta?.requiredSkillLevels ?? 0,
             currentSkillLevels: data.currentSkillLevels ?? meta?.currentSkillLevels ?? 0,
             questions: [],
@@ -136,14 +157,18 @@ export default function InterviewPage() {
           setState("max_level");
         } else {
           setErrorText(
-            "Не удалось сохранить результат собеседования. Попробуй ещё раз чуть позже."
+            data.message ?? "Не удалось сохранить результат собеседования. Попробуй ещё раз чуть позже."
           );
         }
 
         return;
       }
 
-      setResult({ success: !!data.success, chance: data.chance ?? 0 });
+      setResult({
+        success: !!data.success,
+        correctCount: data.correctCount ?? 0,
+        total: data.total ?? 0,
+      });
       setErrorText(null);
       submittedRef.current = true;
       await refresh();
@@ -171,7 +196,6 @@ export default function InterviewPage() {
     return <LoadingScreen />;
   }
 
-  const chancePercent = meta ? Math.round(meta.chance * 100) : null;
   const formatCooldown = (ms: number) => {
     const totalMin = Math.ceil(ms / 60000);
     const hours = Math.floor(totalMin / 60);
@@ -257,52 +281,64 @@ export default function InterviewPage() {
         {state === "ready" && meta && (
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="pixel-font text-sm">Попытка собеседования</CardTitle>
+              <CardTitle className="pixel-font text-sm">Собеседование</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
-                  Шанс успеха (плюс‑минус): {chancePercent ?? 0}%
-                </p>
-                <p className="pixel-font text-[10px] text-muted-foreground">
-                  Уровни навыков: {meta.currentSkillLevels} / {meta.requiredSkillLevels}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <p className="pixel-font text-[10px] font-medium text-muted-foreground">
-                  Примеры вопросов:
-                </p>
-                <ul className="space-y-2">
-                  {meta.questions.map((q) => (
-                    <li key={q.id} className="space-y-1">
-                      <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-                        • {q.text}
-                      </p>
-                      {q.hint && (
-                        <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
-                          Подсказка: {q.hint}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+              <p className="pixel-font text-[10px] text-muted-foreground">
+                Уровни навыков: {meta.currentSkillLevels} / {meta.requiredSkillLevels}. Ответь на
+                вопросы — для прохождения нужна минимум 60% правильных ответов.
+              </p>
+              <div className="space-y-4">
+                {meta.questions.map((q, index) => (
+                  <div key={q.id} className="space-y-2">
+                    <p className="pixel-font text-xs font-medium text-foreground">
+                      {index + 1}. {q.text}
+                    </p>
+                    <div className="grid gap-2">
+                      {q.options.map((opt) => (
+                        <label
+                          key={opt.id}
+                          className="flex cursor-pointer items-center gap-2 rounded border border-border bg-muted/30 px-3 py-2 has-checked:border-primary has-checked:bg-primary/10"
+                        >
+                          <input
+                            type="radio"
+                            name={q.id}
+                            value={opt.id}
+                            checked={selectedAnswers[q.id] === opt.id}
+                            onChange={() => handleSelect(q.id, opt.id)}
+                            className="h-4 w-4 accent-primary"
+                          />
+                          <span className="pixel-font text-[10px] text-foreground">{opt.text}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
               <Button
                 variant="default"
                 size="sm"
                 className="w-full"
-                disabled={submitLoading}
+                disabled={submitLoading || !allAnswered}
                 onClick={handleSubmit}
               >
-                {submitLoading ? "..." : "Пройти собеседование"}
+                {submitLoading ? "Отправка…" : "Отправить ответы"}
               </Button>
 
               {result && (
-                <p className="pixel-font text-xs text-muted-foreground leading-relaxed">
-                  {result.success
-                    ? "Удача! Твой уровень мог повыситься — посмотри на главном экране."
-                    : "Не повезло. Репутация немного просела, попробуй позже ещё раз."}
-                </p>
+                <div className="space-y-1 rounded border border-border bg-muted/30 p-3">
+                  <p className="pixel-font text-xs font-medium text-foreground">
+                    {result.success ? "Собеседование пройдено." : "Собеседование не пройдено."}
+                  </p>
+                  <p className="pixel-font text-[10px] text-muted-foreground">
+                    Правильных ответов: {result.correctCount} из {result.total}.
+                  </p>
+                  <p className="pixel-font text-[10px] text-muted-foreground leading-relaxed">
+                    {result.success
+                      ? "Уровень мог повыситься — посмотри на главном экране."
+                      : "Репутация немного просела. Можно попробовать снова после кулдауна."}
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>

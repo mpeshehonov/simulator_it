@@ -5,7 +5,17 @@ export const ENERGY_REGEN_HOURS = 2;
 
 // Собеседование
 export const INTERVIEW_COOLDOWN_DAYS = 1;
-export const INTERVIEW_QUESTIONS_COUNT = 3;
+/** Количество вопросов в зависимости от карьерного уровня (0–4) */
+export const INTERVIEW_QUESTIONS_BY_LEVEL: Record<number, number> = {
+  0: 2,
+  1: 3,
+  2: 4,
+  3: 5,
+  4: 5,
+  5: 0,
+};
+/** Доля правильных ответов для прохождения (0.6 = 60%) */
+export const INTERVIEW_PASSING_RATIO = 0.6;
 export const INTERVIEW_BASE_SUCCESS_CHANCE = 0.4;
 /** Минимальная сумма уровней навыков (по всем веткам) для допуска к собеседованию на следующий уровень. EXP тратится только на прокачку навыков. */
 export const SKILL_LEVELS_FOR_INTERVIEW: Record<number, number> = {
