@@ -25,8 +25,8 @@ export interface GameEvent {
 export interface SkillBranch {
   id: string;
   name: string;
-  /** Краткое описание для новичков, без жаргона */
-  description?: string;
+  /** По одному блоку на уровень: [0] открывается при уровне 1, [1] при уровне 2 и т.д. Изначально описание скрыто. */
+  descriptionsByLevel?: string[];
   maxLevel: number;
 }
 

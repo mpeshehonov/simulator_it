@@ -57,10 +57,26 @@ function SkillCard({ branch, currentLevel, playerExp, onUpgrade }: SkillCardProp
             </p>
           </div>
         </div>
-        {branch.description && (
-          <p className="text-xs leading-snug text-muted-foreground">
-            {branch.description}
-          </p>
+        {branch.descriptionsByLevel && branch.descriptionsByLevel.length > 0 && (
+          <div className="space-y-2">
+            {currentLevel === 0 ? (
+              <p className="text-[10px] italic text-muted-foreground">
+                Прокачай уровень — откроется описание.
+              </p>
+            ) : (
+              branch.descriptionsByLevel
+                .slice(0, currentLevel)
+                .map((text, i) => (
+                  <p
+                    key={i}
+                    className="text-xs leading-snug text-muted-foreground"
+                    title={`Уровень ${i + 1}`}
+                  >
+                    {text}
+                  </p>
+                ))
+            )}
+          </div>
         )}
         <p className="text-[10px] leading-snug text-primary">
           За уровень: +{Math.round(INCOME_SKILL_MULTIPLIER * 100)}% к доходу, +
