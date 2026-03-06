@@ -1,6 +1,5 @@
 import type { InterviewQuestion } from "@/types/game";
 import type { ProfessionId } from "./professions";
-import { INTERVIEW_QUESTIONS_COUNT } from "./constants";
 import { calcInterviewSuccessChance } from "./skills";
 
 /** Вопросы по профессиям (заглушка — в MVP можно расширить) */
@@ -172,7 +171,7 @@ const QUESTIONS_BY_PROFESSION: Record<ProfessionId, InterviewQuestion[]> = {
  */
 export function pickInterviewQuestions(
   profession: ProfessionId,
-  count: number = INTERVIEW_QUESTIONS_COUNT
+  count: number = 3
 ): InterviewQuestion[] {
   const pool = QUESTIONS_BY_PROFESSION[profession] ?? [];
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
