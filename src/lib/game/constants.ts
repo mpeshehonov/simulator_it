@@ -48,8 +48,8 @@ export const BASE_INCOME_PER_LEVEL: Record<number, number> = {
   5: 1800,
 };
 
-// Telegram Stars (монетизация): по ценности полное восстановление дороже буста
-export const STARS_ENERGY_BOOST = 20;
+// Telegram Stars (монетизация): буст 5 энергии за 9 звёзд, полное восстановление за 29
+export const STARS_ENERGY_BOOST = 5;
 export const STARS_ENERGY_BOOST_PRICE = 9;
 export const STARS_FULL_RESTORE_PRICE = 29;
 
